@@ -13,16 +13,20 @@
 
 ##设计效果
 - 开始界面设计效果
-  ![start](./design/start.png)
+
+![start](./design/start.png)
 
 - 经典模式界面设计效果
-  ![classical](./design/classical.png)
+
+![classical](./design/classical.png)
 
 - 极限模式界面设计效果
-  ![extream](./design/extream.png)
+
+![extream](./design/extream.png)
 
 - 帮助界面设计效果
-  ![help](./design/help.png)
+
+![help](./design/help.png)
 
 ##开发进度
 - 游戏框架及文件结构整理 （OK）
