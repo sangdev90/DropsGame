@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="win32">
+      <UniqueIdentifier>{84a8ebd7-7cf0-47f6-b75e-d441df67da40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{715254bc-d70b-4ec5-bf29-467dd3ace079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\DataUtils">
+      <UniqueIdentifier>{a464ffe6-1cb6-4a08-9b7f-f817286a6126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Entity">
+      <UniqueIdentifier>{4e40bc96-0698-4bd6-b530-e62feff04cf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameScene">
+      <UniqueIdentifier>{17d3d364-5e15-4603-b79f-2f8d63bdc6c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Help">
+      <UniqueIdentifier>{b2541935-99c7-460c-a1c9-1fb20fca3b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Loading">
+      <UniqueIdentifier>{9f0d02fa-00fa-47da-8e5c-2c929045ad88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Splash">
+      <UniqueIdentifier>{a05a2352-e358-4019-8360-3932d7ca7c49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Start">
+      <UniqueIdentifier>{d8d69eb1-ba87-4692-821d-a3b273424a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Setting">
+      <UniqueIdentifier>{d7a79434-c0a2-4567-9a89-e069097f3b4c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AppDelegate.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Splash\Splash.cpp">
+      <Filter>src\Splash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Start\Start.cpp">
+      <Filter>src\Start</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Loading\Loading.cpp">
+      <Filter>src\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Help\Help.cpp">
+      <Filter>src\Help</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameScene\GameScene.cpp">
+      <Filter>src\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameScene\WinLayer.cpp">
+      <Filter>src\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameScene\LoseLayer.cpp">
+      <Filter>src\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Entity\Drop.cpp">
+      <Filter>src\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\DataUtils\DataUtils.cpp">
+      <Filter>src\DataUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Entity\DropBulet.cpp">
+      <Filter>src\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Setting\Setting.cpp">
+      <Filter>src\Setting</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AppDelegate.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Splash\Splash.h">
+      <Filter>src\Splash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Start\Start.h">
+      <Filter>src\Start</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Loading\Loading.h">
+      <Filter>src\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Help\Help.h">
+      <Filter>src\Help</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameScene\GameScene.h">
+      <Filter>src\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameScene\WinLayer.h">
+      <Filter>src\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameScene\LoseLayer.h">
+      <Filter>src\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Entity\Drop.h">
+      <Filter>src\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\DataUtils\DataUtils.h">
+      <Filter>src\DataUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Entity\DropBulet.h">
+      <Filter>src\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Setting\Setting.h">
+      <Filter>src\Setting</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="game.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
