@@ -21,5 +21,7 @@ public:
 
 	// return game scene by game mode 
 	static Scene* createScene(GameMode mode);
+    
+    static GameScene* create(GameMode mode);
 };
 

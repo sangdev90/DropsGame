@@ -28,20 +28,26 @@ bool GameScene::init(GameMode mode)
 
 Scene* GameScene::createScene(GameMode mode)
 {
-	auto scene = Scene::create();
-	GameScene *pRet = new(std::nothrow) GameScene();
-	if (pRet && pRet->init(mode))
-	{
-		pRet->autorelease();
-		scene->addChild(pRet);
-		return scene;
-	}
-	else
-	{
-		delete pRet;
-		pRet = nullptr;
-		return nullptr;
-	}
+    auto scene = Scene::create();
+    auto layer = GameScene::create(mode);
+    scene->addChild(layer);
+    return scene;
+}
+
+GameScene* GameScene::create(GameMode mode)
+{
+    GameScene *pRet = new(std::nothrow) GameScene();
+    if (pRet && pRet->init(mode))
+    {
+        pRet->autorelease();
+        return pRet;
+    }
+    else
+    {
+        delete pRet;
+        pRet = nullptr;
+        return nullptr;
+    }
 }
 
 
