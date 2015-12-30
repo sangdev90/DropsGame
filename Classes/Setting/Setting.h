@@ -9,4 +9,7 @@ public:
 	virtual bool init();
 	CREATE_FUNC(Setting);
 	static Scene* createScene();
+
+	// continue button callback
+	void btn_continue_callback(Ref* pSender);
 };

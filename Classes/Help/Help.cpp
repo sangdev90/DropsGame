@@ -1,6 +1,7 @@
 #include "Help.h"
 #include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
+#include "../Start/Start.h"
 using namespace cocos2d::ui;
 
 bool Help::init()
@@ -14,6 +15,19 @@ bool Help::init()
     auto rootNode = CSLoader::createNode("game-help.csb");
     addChild(rootNode);
 
+	// get continue button
+	Button * btn_continue = static_cast<Button*>(rootNode->getChildByName("btn-continue"));
+
+	// add button callback
+	btn_continue->addTouchEventListener(CC_CALLBACK_1(Help::btn_continue_callback, this));
+
+	// btn fadein and fadeout action
+	auto action = Sequence::create(
+		FadeOut::create(1),
+		FadeIn::create(1),
+		NULL);
+	btn_continue->runAction(RepeatForever::create(action));
+
 	return true;
 }
 
@@ -23,5 +37,10 @@ Scene* Help::createScene()
 	auto layer = Help::create();
 	scene->addChild(layer);
 	return scene;  // return scene with layer
+}
+
+void Help::btn_continue_callback(Ref* pSender)
+{
+	Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Start::createScene())); 
 }
 

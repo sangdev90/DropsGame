@@ -9,5 +9,8 @@ public:
 	CREATE_FUNC(Help);
 	virtual bool init();
 	static Scene* createScene();
+
+	// continue callback
+	void btn_continue_callback(Ref* pSender);
 };
 

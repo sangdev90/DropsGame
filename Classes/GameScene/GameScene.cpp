@@ -10,17 +10,31 @@ bool GameScene::init(GameMode mode)
 		return false;
 	}
 	// init game scene here
+	auto rootNode = CSLoader::createNode("game-classical.csb");
+	addChild(rootNode);
+
+	// load action
+	auto action = CSLoader::createTimeline("game-classical.csb");
+	rootNode->runAction(action);
+
+	// run action by frame
+	action->gotoFrameAndPlay(0, 6, true);
+
+	// get button continue
+	Button* btn_continue = static_cast<Button*>(rootNode->getChildByName("btn-set"));
 
 	return true;
 }
 
-GameScene* GameScene::createScene(GameMode mode)
+Scene* GameScene::createScene(GameMode mode)
 {
+	auto scene = Scene::create();
 	GameScene *pRet = new(std::nothrow) GameScene();
 	if (pRet && pRet->init(mode))
 	{
 		pRet->autorelease();
-		return pRet;
+		scene->addChild(pRet);
+		return scene;
 	}
 	else
 	{
@@ -29,4 +43,5 @@ GameScene* GameScene::createScene(GameMode mode)
 		return nullptr;
 	}
 }
+
 

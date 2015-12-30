@@ -20,7 +20,6 @@ public:
 	virtual bool init(GameMode mode);
 
 	// return game scene by game mode 
-	static GameScene* createScene(GameMode mode);
-
+	static Scene* createScene(GameMode mode);
 };
 
