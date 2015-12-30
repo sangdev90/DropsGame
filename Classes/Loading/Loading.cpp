@@ -19,6 +19,7 @@ bool Loading::init()
 	Sprite* button = Sprite::create("LoadingSlider/sliderButton.png");
 
 	m_Slider = ControlSlider::create(background, pogress, button);
+    m_Slider->setScale(3.0f);
 	m_Slider->setPosition(Vec2(window_width*0.5, window_height*0.5));
 	m_Slider->setMaximumAllowedValue(1.2f);
 	m_Slider->setMinimumAllowedValue(0.0f);

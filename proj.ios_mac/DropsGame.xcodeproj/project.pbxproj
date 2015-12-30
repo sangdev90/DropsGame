@@ -52,6 +52,8 @@
 		521A8EAA19F11F5000D177D7 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 521A8EA819F11F5000D177D7 /* fonts */; };
 		52B47A471A53D09C004E4C60 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B47A461A53D09B004E4C60 /* Security.framework */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
+		9B72D0CD1C33C9CC008DC559 /* LoadingSlider in Resources */ = {isa = PBXBuildFile; fileRef = 9B72D0CC1C33C9CC008DC559 /* LoadingSlider */; };
+		9B72D0CE1C33C9CC008DC559 /* LoadingSlider in Resources */ = {isa = PBXBuildFile; fileRef = 9B72D0CC1C33C9CC008DC559 /* LoadingSlider */; };
 		9B80D58A1C32C89F00D5524B /* DataUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B80D56D1C32C89F00D5524B /* DataUtils.cpp */; };
 		9B80D58B1C32C89F00D5524B /* DataUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B80D56D1C32C89F00D5524B /* DataUtils.cpp */; };
 		9B80D58C1C32C89F00D5524B /* Drop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9B80D5701C32C89F00D5524B /* Drop.cpp */; };
@@ -192,6 +194,7 @@
 		521A8EA819F11F5000D177D7 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		52B47A461A53D09B004E4C60 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		9B72D0CC1C33C9CC008DC559 /* LoadingSlider */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LoadingSlider; sourceTree = "<group>"; };
 		9B80D56D1C32C89F00D5524B /* DataUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataUtils.cpp; sourceTree = "<group>"; };
 		9B80D56E1C32C89F00D5524B /* DataUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtils.h; sourceTree = "<group>"; };
 		9B80D5701C32C89F00D5524B /* Drop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Drop.cpp; sourceTree = "<group>"; };
@@ -360,6 +363,7 @@
 		46880B7519C43A67006E1F66 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9B72D0CC1C33C9CC008DC559 /* LoadingSlider */,
 				9BF010A41C32D16900A53C93 /* res */,
 				9BF010A21C32D15A00A53C93 /* Default */,
 				9BF010A01C32D13300A53C93 /* drops */,
@@ -642,6 +646,7 @@
 				9B80D6671C32C9C700D5524B /* game-layer-classical.csb in Resources */,
 				5087E78517EB970100C73F5D /* Icon-72.png in Resources */,
 				9B80D6711C32C9C700D5524B /* game-setting.csb in Resources */,
+				9B72D0CD1C33C9CC008DC559 /* LoadingSlider in Resources */,
 				521A8E6519F0C34300D177D7 /* Default-736h@3x.png in Resources */,
 				9B80D66B1C32C9C700D5524B /* game-layer-gray.csb in Resources */,
 				521A8EA919F11F5000D177D7 /* fonts in Resources */,
@@ -675,6 +680,7 @@
 				9B80D65E1C32C9C700D5524B /* game-ani-lose.csb in Resources */,
 				503AE0F817EB97AB00D1A890 /* Icon.icns in Resources */,
 				9B80D6681C32C9C700D5524B /* game-layer-classical.csb in Resources */,
+				9B72D0CE1C33C9CC008DC559 /* LoadingSlider in Resources */,
 				3EACC99019EE6D4300EB3C5E /* res in Resources */,
 				9B80D6621C32C9C700D5524B /* game-classical.csb in Resources */,
 				9B80D66E1C32C9C700D5524B /* game-layer-lose.csb in Resources */,
