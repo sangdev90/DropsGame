@@ -9,5 +9,9 @@ public:
 	CREATE_FUNC(WinLayer);
 	virtual bool init();
 	static Layer* createScene();
+
+	// btn callback
+	void btn_exit_callback(Ref* pSender);
+	void btn_next_callback(Ref* pSender);
 };
 

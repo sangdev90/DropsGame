@@ -1,6 +1,8 @@
 #include "AppDelegate.h"
 #include "Splash/Splash.h"
 
+#include "GameScene/GameScene.h"
+
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(2048, 1536);
@@ -75,7 +77,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = Splash::createScene();  // start splash scene
+    auto scene = GameScene::createScene(GameMode::Classical, 1);  // start splash scene
 
     // run
     director->runWithScene(scene);

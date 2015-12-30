@@ -70,7 +70,7 @@ void Loading::loadResources(float t)
 
 	case 6:
 		// after load resources ,change to game scene
-		Director::getInstance()->replaceScene(GameScene::createScene(GameMode::Classical));
+		Director::getInstance()->replaceScene(GameScene::createScene(GameMode::Classical, 1));
 		break;
 	}
 	m_index++;

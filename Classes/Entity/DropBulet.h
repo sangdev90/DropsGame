@@ -17,15 +17,20 @@ class DropBullet : public Sprite
 public:
 
 	Dir getDir() { return m_Direction; } // return direction of current bullet
-	Drop* getOwner() { return m_Owner; } // return the owner of current bullet
 	bool  isAlive() { return m_Alive; }  // return life state of current bullet
 
-	static DropBullet* creatSprite(Drop& owner, Dir direction, int speed);
-	virtual bool init(Drop& owner, Dir direction, int speed);
+	Rect getRect() { return m_Rect; }    // return rect of bullet
+
+	static DropBullet* createSprite(Vec2 postion, Dir direction, int speed);
+	virtual bool init(Vec2 postion, Dir direction, int speed);
+
+	void update(float delta);
 
 private:
-	Drop * m_Owner;
 	Dir    m_Direction;
 	int    m_Speed;
 	bool   m_Alive;     // show bullet
+
+	Sprite* m_Sprite;
+	Rect m_Rect;
 };

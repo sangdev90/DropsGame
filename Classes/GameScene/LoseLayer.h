@@ -9,5 +9,9 @@ public:
 	CREATE_FUNC(LoseLayer);
 	virtual bool init();
 	static Layer* createScene();
+
+	// button callback
+	void btn_exit_callback(Ref* pSender);
+	void btn_restart_callback(Ref* pSender);
 };
 

@@ -7,6 +7,8 @@
 USING_NS_CC;
 using namespace cocos2d;
 
+class Drop;
+
 // two game mode 
 enum GameMode
 {
@@ -17,9 +19,19 @@ enum GameMode
 class GameScene : public Layer
 {
 public:
-	virtual bool init(GameMode mode);
+	virtual bool init(GameMode mode, int level);
 
 	// return game scene by game mode 
-	static Scene* createScene(GameMode mode);
+	static Scene* createScene(GameMode mode, int level);
+	static GameScene* create(GameMode mode, int level);
+
+private:
+	int m_Time;  // game time
+	Vec2 m_ClassicalPos[6][6];
+	Vec2 m_ExtreamPosL[5][3];
+	Vec2 m_ExtreamPosR[5][3];
+	Vec2 m_ExtreamCenter;
+
+	Drop * test;
 };
 
