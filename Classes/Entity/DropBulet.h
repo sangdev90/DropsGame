@@ -18,7 +18,7 @@ public:
 
 	Dir getDir() { return m_Direction; } // return direction of current bullet
 	bool  isAlive() { return m_Alive; }  // return life state of current bullet
-
+	float getR() { return m_R; }
 	Rect getRect() { return m_Rect; }    // return rect of bullet
 
 	static DropBullet* createSprite(Vec2 postion, Dir direction, int speed);
@@ -44,6 +44,8 @@ private:
 
 	Sprite * m_Sprite;
 	Rect m_Rect;
+
+	float m_R;  // contack distance
 
 	Animate * m_AnimateBoom;
 };

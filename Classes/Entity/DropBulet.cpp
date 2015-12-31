@@ -58,6 +58,7 @@ bool DropBullet::init(Vec2 postion, Dir direction, int speed)
 	// save direction and speed
 	m_Direction = direction;
 	m_Speed = speed;
+	m_R = width;
 
 	this->scheduleUpdate();  // update position of bullet
 

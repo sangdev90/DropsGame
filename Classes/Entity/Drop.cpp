@@ -42,12 +42,14 @@ bool Drop::init(Vec2 position, DropsType type)
 	this->setPosition(position); // set sprite position
 	this->addChild(shap, 2);     // show shap
 
-	m_Sprite = shap;  // save sprite
-	m_Type = type;    // init state
-
 	auto width = shap->getContentSize().width;
 	auto height = shap->getContentSize().height;
 	m_Rect = Rect(position.x - width * 2, position.y - height * 2, width * 4, height * 4);
+
+	m_Sprite = shap;  // save sprite
+	m_Type = type;    // init state
+	m_R = width;
+	m_IsAtacking = false;
 
 	this->scheduleUpdate();     // update func
 
@@ -124,6 +126,7 @@ void Drop::drop_upgrade()
 	}
 	m_Sprite->setScale(4.0f);
 	this->addChild(m_Sprite, 2);
+	m_IsAtacking = false;
 }
 
 // new four bullet

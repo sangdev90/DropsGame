@@ -1,11 +1,6 @@
 #include "GameScene.h"
-#include "cocostudio/CocoStudio.h"
-#include "ui/CocosGUI.h"
-
 #include "../Entity/Drop.h"
 #include "../Entity/DropBulet.h"
-
-using namespace cocos2d::ui;
 
 extern Vector<DropBullet*> m_DropBulletList;
 
@@ -16,6 +11,9 @@ bool GameScene::init(GameMode mode, int level)
 		return false;
 	}
 	// init game scene here
+
+	m_SetDown = false;
+	m_Gamemode = mode;
 
 	Node* rootNode = NULL;
 	switch (mode)
@@ -69,12 +67,15 @@ bool GameScene::init(GameMode mode, int level)
 	action->gotoFrameAndPlay(0, 6, true);
 
 	// get button 
-	Button* btn_set = static_cast<Button*>(rootNode->getChildByName("btn-set"));
-	Button* btn_restart = static_cast<Button*>(rootNode->getChildByName("btn-restart"));
-	Button* btn_about = static_cast<Button*>(rootNode->getChildByName("btn-about"));
-	Button* btn_sound = static_cast<Button*>(rootNode->getChildByName("btn-sound"));
+	btn_set = static_cast<Button*>(rootNode->getChildByName("btn-set"));
+	btn_restart = static_cast<Button*>(rootNode->getChildByName("btn-restart"));
+	btn_about = static_cast<Button*>(rootNode->getChildByName("btn-about"));
+	btn_sound = static_cast<Button*>(rootNode->getChildByName("btn-sound"));
 
-	Sprite* btn_bg = static_cast<Sprite*>(rootNode->getChildByName("btn-bg"));
+	// set button event
+	btn_set->addTouchEventListener(CC_CALLBACK_2(GameScene::btn_set_callback, this));
+
+	btn_bg = static_cast<Sprite*>(rootNode->getChildByName("btn-bg"));
 	btn_bg->setVisible(false);     // default visible : false
 	btn_about->setVisible(false);
 	btn_restart->setVisible(false);
@@ -90,19 +91,38 @@ bool GameScene::init(GameMode mode, int level)
 	TextBMFont* score = static_cast<TextBMFont*>(game_layer->getChildByName("score"));
 
 	// Rect classical
-	Node* bound_left = rootNode->getChildByName("bound_left");
-	Node* bound_right = rootNode->getChildByName("bound_right");
-	m_GridBoundClassical = Rect(bound_left->getPositionX(), bound_left->getPositionY(), 
-		bound_right->getPositionX() - bound_left->getPositionX(), 
-		bound_right->getPositionY() - bound_left->getPositionY());
+	if (mode == GameMode::Classical)
+	{
+		Node* bound_left = rootNode->getChildByName("bound_left");
+		Node* bound_right = rootNode->getChildByName("bound_right");
+		m_GridBoundClassical = Rect(bound_left->getPositionX(), bound_left->getPositionY(),
+			bound_right->getPositionX() - bound_left->getPositionX(),
+			bound_right->getPositionY() - bound_left->getPositionY());
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 
 	// add objects
-	auto test = Drop::createSprite(m_ClassicalPos[2][2], DropsType::Drops_one);
-	m_DropList.pushBack(test);
+	switch (mode)
+	{
+	case Classical:  // classical game
+		{
+			auto test = Drop::createSprite(m_ClassicalPos[2][2], DropsType::Drops_one);
+			m_DropList.pushBack(test);
+
+			auto test2 = Drop::createSprite(m_ClassicalPos[2][1], DropsType::Drops_four);
+			m_DropList.pushBack(test2);
+		}
+		break;
+	case Extream:  // extream game
+		{
+			auto test = Drop::createSprite(m_ExtreamPosL[2][2], DropsType::Drops_one);
+			m_DropList.pushBack(test);
+		}
+		break;
+	}
 	
-	// show objects
+	// show all objects
 	for (int i = 0;i < m_DropList.size();i++)
 	{
 		this->addChild(m_DropList.at(i), 2);
@@ -170,6 +190,48 @@ GameScene* GameScene::create(GameMode mode, int level)
 
 void GameScene::update(float delta)
 {
+	//////////////////////////////Classocal mode////////////////////////////////////////////
+	switch (m_Gamemode)
+	{
+	case GameMode::Classical:
+		{
+			// add bullet to bulletDeleteList
+			for (int i = 0;i < m_DropBulletList.size();i++)
+			{
+				auto bullet = (DropBullet*)m_DropBulletList.at(i);
+				if ((bullet->getPositionX() <= m_GridBoundClassical.getMinX()) |
+					(bullet->getPositionX() >= m_GridBoundClassical.getMaxX()) |
+					(bullet->getPositionY() <= m_GridBoundClassical.getMinY()) |
+					(bullet->getPositionY() >= m_GridBoundClassical.getMaxY()))
+				{
+					m_BulletDeleteList.pushBack(bullet);
+				}
+				for (int j = 0;j < m_DropList.size();j++)
+				{
+					auto drop = (Drop*)m_DropList.at(j);
+					if ((drop->isAlive()) && (!drop->m_IsAtacking) && (drop->getPosition() - bullet->getPosition()).length() <= (drop->getR() + bullet->getR()))
+					{
+						// bullet attack drop
+						drop->m_IsAtacking = true;  // avoide upgrade to explode
+						if (drop->getState() != Drops_four)
+						{
+							drop->setState((enum DropsType)(drop->getState() + 1));  // upgrade drops
+						}
+						else
+						{
+							m_DropDeleteList.pushBack(drop);      // add drop to delete list
+							m_BulletCombineList.pushBack(bullet); // add bullet to combine list 
+						}
+					}
+				}
+			}
+		}
+		break;
+	case GameMode::Extream:
+		{
+		}
+		break;
+	}
 	// update DropList and DropDeleteList
 	for (int i = 0;i < m_DropDeleteList.size(); i++)
 	{
@@ -177,19 +239,6 @@ void GameScene::update(float delta)
 		obj->blast();
 		m_DropDeleteList.eraseObject(obj);
 		m_DropList.eraseObject(obj);
-	}
-
-	// add bullet to bulletDeleteList
-	for (int i = 0;i < m_DropBulletList.size();i++)
-	{
-		auto bullet = (DropBullet*)m_DropBulletList.at(i);
-		if (bullet->getPositionX() <= m_GridBoundClassical.getMinX() | 
-			bullet->getPositionX() >= m_GridBoundClassical.getMaxX() | 
-			bullet->getPositionY() <= m_GridBoundClassical.getMinY() |
-			bullet->getPositionY() >= m_GridBoundClassical.getMaxY() )
-		{
-			m_BulletDeleteList.pushBack(bullet);
-		}
 	}
 
 	// update bullet delete list
@@ -201,6 +250,37 @@ void GameScene::update(float delta)
 		m_DropBulletList.eraseObject(bullet);
 	}
 
-	
+	// update combine list
+	for (int i = 0;i < m_BulletCombineList.size();i++)
+	{
+		auto bullet = (DropBullet*)m_BulletCombineList.at(i);
+		bullet->combine();
+		m_BulletCombineList.eraseObject(bullet);
+		m_DropBulletList.eraseObject(bullet);
+	}
+
+	//////////////////////////////////Extream mode////////////////////////////////////////
+}
+
+void GameScene::btn_set_callback(Ref* pSender, Widget::TouchEventType type)
+{
+	if (type == Widget::TouchEventType::ENDED)
+	{
+		m_SetDown = !m_SetDown;
+		if (m_SetDown)
+		{
+			btn_bg->setVisible(true);     // default visible : false
+			btn_about->setVisible(true);
+			btn_restart->setVisible(true);
+			btn_sound->setVisible(true);
+		}
+		else
+		{
+			btn_bg->setVisible(false);     // default visible : false
+			btn_about->setVisible(false);
+			btn_restart->setVisible(false);
+			btn_sound->setVisible(false);
+		}
+	}
 }
 

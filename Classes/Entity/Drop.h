@@ -37,6 +37,7 @@ public:
 
 	void setState(DropsType state);
 	DropsType getState() { return m_Type; }
+	float getR() { return m_R; }
 
 	bool isAlive() { return m_Alive; }
 	Rect getRect() { return m_Rect; }
@@ -46,9 +47,13 @@ private:
 	Rect m_Rect;
 	Sprite *m_Sprite;
 
+	float m_R;  // contack distance
+
 	Texture2D * m_Texture_1;
 	Texture2D * m_Texture_2;
 	Texture2D * m_Texture_3;
 	Texture2D * m_Texture_4;
+public:
+	bool m_IsAtacking;
 };
 
