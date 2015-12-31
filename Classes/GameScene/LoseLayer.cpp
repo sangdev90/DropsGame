@@ -4,6 +4,9 @@
 using namespace cocos2d::ui;
 using namespace cocostudio;
 
+#include "../Start/Start.h"
+#include "DarkLayer.h"
+
 bool LoseLayer::init()
 {
 	if (!Layer::init())
@@ -32,7 +35,7 @@ bool LoseLayer::init()
 	return true;
 }
 
-Layer* LoseLayer::createScene()
+Layer* LoseLayer::createLayer()
 {
 	return LoseLayer::create(); // return layer only
 }
@@ -55,5 +58,6 @@ void LoseLayer::btn_exit_callback(Ref* pSender)
 void LoseLayer::btn_restart_callback(Ref* pSender)
 {
 	// restart current game scene 
+	Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Start::createScene()));
 }
 

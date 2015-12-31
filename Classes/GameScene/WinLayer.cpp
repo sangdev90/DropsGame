@@ -3,6 +3,8 @@
 #include "ui/CocosGUI.h"
 using namespace cocos2d::ui;
 
+#include "GameScene.h"
+
 bool WinLayer::init()
 {
 	if (!Layer::init())
@@ -31,7 +33,7 @@ bool WinLayer::init()
 	return true;
 }
 
-Layer* WinLayer::createScene()
+Layer* WinLayer::createLayer()
 {
 	return WinLayer::create();  // return layer only
 }
@@ -54,4 +56,9 @@ void WinLayer::btn_exit_callback(Ref* pSender)
 void WinLayer::btn_next_callback(Ref* pSender)
 {
 	// load game scene next round
+	int cur = atoi(DataUtils::read(GameLevel).c_str());
+	if (cur < DataUtils::game_info("data/game.config").max_classical_level)
+	{
+		Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, GameScene::createScene(GameMode::Classical, cur + 1)));
+	}
 }

@@ -148,6 +148,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\DataUtils\DataUtils.cpp" />
     <ClCompile Include="..\Classes\Entity\Drop.cpp" />
     <ClCompile Include="..\Classes\Entity\DropBulet.cpp" />
+    <ClCompile Include="..\Classes\GameScene\DarkLayer.cpp" />
     <ClCompile Include="..\Classes\GameScene\GameScene.cpp" />
     <ClCompile Include="..\Classes\GameScene\LoseLayer.cpp" />
     <ClCompile Include="..\Classes\GameScene\WinLayer.cpp" />
@@ -163,6 +164,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\DataUtils\DataUtils.h" />
     <ClInclude Include="..\Classes\Entity\Drop.h" />
     <ClInclude Include="..\Classes\Entity\DropBulet.h" />
+    <ClInclude Include="..\Classes\GameScene\DarkLayer.h" />
     <ClInclude Include="..\Classes\GameScene\GameScene.h" />
     <ClInclude Include="..\Classes\GameScene\LoseLayer.h" />
     <ClInclude Include="..\Classes\GameScene\WinLayer.h" />

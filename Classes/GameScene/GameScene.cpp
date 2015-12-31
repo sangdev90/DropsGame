@@ -2,7 +2,38 @@
 #include "../Entity/Drop.h"
 #include "../Entity/DropBulet.h"
 
+#include "LoseLayer.h"
+#include "WinLayer.h"
+#include "DarkLayer.h"
+
 extern Vector<DropBullet*> m_DropBulletList;
+
+int minInt(int a, int b)
+{
+	return a > b ? b : a;
+}
+
+void GameScene::set_tank_fore_height(int number)
+{
+	if (number == 0)
+	{
+		tank_fore_top->setVisible(false);
+	}
+	else {
+		tank_fore_top->setVisible(true);
+	}
+	number = minInt(number, 20); // 限制高度 水滴数量不限制
+	tank_fore->setScaleY(number / 20.0 * 0.3);
+	tank_fore_top->setPositionY(tank_fore->getPositionY() + tank_fore->getContentSize().height * number / 20.0 * 0.3);
+}
+
+// 增加分数
+void GameScene::addPoints(int point)
+{
+	int p = atoi(DataUtils::read(GameScore).c_str());
+	DataUtils::save(GameScore, StringUtils::format("%d", p + point));
+	score->setText(DataUtils::read(GameScore));
+}
 
 bool GameScene::init(GameMode mode, int level)
 {
@@ -15,6 +46,8 @@ bool GameScene::init(GameMode mode, int level)
 	m_SetDown = false;
 	m_SoundDown = false;
 	m_Gamemode = mode;
+	m_Click = false;
+	m_DropCount = 0;
 
 	Node* rootNode = NULL;
 	switch (mode)
@@ -92,9 +125,34 @@ bool GameScene::init(GameMode mode, int level)
 
 	// game layer
 	Node* game_layer = rootNode->getChildByName("game-layer");
-	TextBMFont* drops = static_cast<TextBMFont*>(game_layer->getChildByName("drops"));
-	TextBMFont* round = static_cast<TextBMFont*>(game_layer->getChildByName("round"));
-	TextBMFont* score = static_cast<TextBMFont*>(game_layer->getChildByName("score"));
+	drops = static_cast<TextBMFont*>(game_layer->getChildByName("drops"));
+	round = static_cast<TextBMFont*>(game_layer->getChildByName("round"));
+	score = static_cast<TextBMFont*>(game_layer->getChildByName("score"));
+	game_type = static_cast<TextBMFont*>(game_layer->getChildByName("game-type"));
+
+	// 更新top round
+	auto top = atoi(DataUtils::read(TopLevel).c_str());
+	if (level > top)
+	{
+		DataUtils::save(TopLevel, StringUtils::format("%d", level));
+	}
+	top_round->setText(StringUtils::format("%d", atoi(DataUtils::read(TopLevel).c_str())));
+
+	// 更新当前level
+	DataUtils::save(GameLevel, StringUtils::format("%d", level));
+
+	// 更新round
+	round->setText(StringUtils::format("%d", level));
+
+	// 更新score
+	if (level == 1)
+	{
+		score->setText("0");
+		DataUtils::save(GameScore, "0"); // 更新每局初始分数
+	}
+	else {
+		score->setText(DataUtils::read(GameScore)); // 显示前面关卡已积累分数
+	}
 
 	// Rect classical
 	if (mode == GameMode::Classical)
@@ -107,13 +165,19 @@ bool GameScene::init(GameMode mode, int level)
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-
+	auto game_info = DataUtils::game_info("data/game.config");
+	
 	// add objects
 	switch (mode)
 	{
 	case Classical:  // classical game
 		{
-			auto data = DataUtils::read("data/level1.lev");
+			if (level > game_info.max_classical_level)
+			{
+				return false;
+			}
+			// 加载当前等级的场景数据
+			auto data = DataUtils::read(StringUtils::format("data/level%d.lev", level).c_str()); // load game level : level
 			DropsType type = DropsType::Drops_one;
 			for (int i = 0; i < 6; i++)
 			{
@@ -135,19 +199,39 @@ bool GameScene::init(GameMode mode, int level)
 						type = DropsType::Drops_four;
 					}
 
-					if (type == DropsType::Drops_zero) {
+					if (type == DropsType::Drops_zero){
 						continue;
 					}
 					auto drop = Drop::createSprite(m_ClassicalPos[i][j], type);
 					m_DropList.pushBack(drop);
 				}
 			}
+
+			// 加载初始水箱储蓄量
+			tank_fore = static_cast<Sprite*>(game_layer->getChildByName("tank-fore"));
+			tank_fore_top = static_cast<Sprite*>(game_layer->getChildByName("tank-fore-top"));
+			set_tank_fore_height(game_info.init_tank_drops);
+			drops->setText(StringUtils::format("%02d", game_info.init_tank_drops)); // 更新水箱显示数值
+
+			if (level == 1) // 第一关初始化水滴数量
+			{
+				DataUtils::save(GameDrops, StringUtils::format("%d", game_info.init_tank_drops));
+			}
+			else {
+				drops->setText(DataUtils::read(GameDrops));
+			}
+
+			// 更改游戏模式label
+			game_type->setText("Classical");
 		}
 		break;
 	case Extreme:  // extream game
 		{
 			auto test = Drop::createSprite(m_ExtreamPosL[2][2], DropsType::Drops_one);
 			m_DropList.pushBack(test);
+
+			// 更改游戏模式label
+			game_type->setText("Extreme");
 		}
 		break;
 	}
@@ -167,21 +251,35 @@ bool GameScene::init(GameMode mode, int level)
 
 	};
 	event->onTouchEnded = [&](Touch * tou, Event * eve) {
-		auto location = tou->getLocation();
-
-		// update all drops
-		for (int i = 0;i < m_DropList.size();i++)
+		if (!m_Click)
 		{
-			auto rect = m_DropList.at(i)->getRect();
-			if (location.x > rect.getMinX() && location.x < rect.getMaxX() && location.y > rect.getMinY() && location.y < rect.getMaxY())
+			auto location = tou->getLocation();
+
+			// update all drops
+			for (int i = 0;i < m_DropList.size();i++)
 			{
-				if (m_DropList.at(i)->getState() != Drops_four)
+				auto rect = m_DropList.at(i)->getRect();
+				if (location.x > rect.getMinX() && location.x < rect.getMaxX() && location.y > rect.getMinY() && location.y < rect.getMaxY())
 				{
-					m_DropList.at(i)->setState((enum DropsType)(m_DropList.at(i)->getState() + 1));  // upgrade drops
-				}
-				else
-				{
-					m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
+					if (m_DropList.at(i)->getState() != Drops_four)
+					{
+						m_DropList.at(i)->setState((enum DropsType)(m_DropList.at(i)->getState() + 1));  // upgrade drops
+					}
+					else
+					{
+						m_Click = true;		  // 连击判断开始
+						m_CoundBegin = false; // 判断计数开始点
+						m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
+					}
+					// 减少水箱水滴
+					auto num = atoi(DataUtils::read(GameDrops).c_str());
+					DataUtils::save(GameDrops, StringUtils::format("%d", num - 1)); // 减少
+					if (atoi(DataUtils::read(GameDrops).c_str()) > -1)
+					{
+						drops->setText(DataUtils::read(GameDrops));
+					}
+					// 更新水箱高度
+					set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
 				}
 			}
 		}
@@ -260,14 +358,18 @@ void GameScene::update(float delta)
 		break;
 	case GameMode::Extreme:
 		{
+			
 		}
 		break;
 	}
+	/////////////////////////////////all mode/////////////////////////////////////////
 	// update DropList and DropDeleteList
 	for (int i = 0;i < m_DropDeleteList.size(); i++)
 	{
 		auto obj = (Drop*)m_DropDeleteList.at(i);
+		addPoints(2);  // 水滴爆炸+2分
 		obj->blast();
+		m_DropCount++; // 计数器增加
 		m_DropDeleteList.eraseObject(obj);
 		m_DropList.eraseObject(obj);
 	}
@@ -285,12 +387,87 @@ void GameScene::update(float delta)
 	for (int i = 0;i < m_BulletCombineList.size();i++)
 	{
 		auto bullet = (DropBullet*)m_BulletCombineList.at(i);
+		addPoints(1); // 水滴结合+1分
 		bullet->combine();
 		m_BulletCombineList.eraseObject(bullet);
 		m_DropBulletList.eraseObject(bullet);
 	}
 
-	//////////////////////////////////Extream mode////////////////////////////////////////
+	// 判断输赢
+	if (atoi(DataUtils::read(GameDrops).c_str()) == 0 && m_BulletDeleteList.size() == 0 && m_BulletCombineList.size() == 0)
+	{
+		// 输
+		gameLose();
+		unscheduleUpdate();
+	}
+
+	if (m_DropList.size() == 0 && m_DropBulletList.size() == 0 && m_BulletDeleteList.size() == 0)
+	{
+		if (atoi(DataUtils::read(GameDrops).c_str()) >= 0)
+		{
+			// 赢
+			gameWin();
+			unscheduleUpdate();
+		}
+	}
+
+	if ((m_CoundBegin == false) && m_Click && m_DropBulletList.size() > 0)
+	{
+		m_CoundBegin = true; // 开始计数
+		m_DropCount = 0;	 // 计数器清零
+		m_upInt = 1;		 // 计数器跟踪器，避免多次执行水滴递增操作
+	}
+
+	if (m_CoundBegin)
+	{
+		if (m_DropCount == m_upInt)
+		{
+			log("-----------%d----------", m_DropCount);
+			if (m_DropCount % 2 == 0)
+			{
+				// 增加水箱水滴
+				int drop = atoi(DataUtils::read(GameDrops).c_str());
+				DataUtils::save(GameDrops, StringUtils::format("%d", drop + 1));
+				set_tank_fore_height(drop + 1);						 // 水滴图片增高
+				drops->setText(StringUtils::format("%d", drop + 1)); // 水滴数字增加 1
+				log("=====%d=====", drop + 1);
+			}
+			m_upInt++;
+		}
+	}
+
+	if (m_CoundBegin && m_DropBulletList.size() == 0 && m_BulletCombineList.size() == 0 && m_BulletDeleteList.size() == 0)
+	{
+		// 结束计数
+		m_CoundBegin = false;
+		m_Click = false;
+	}
+}
+
+void GameScene::gameLose()
+{
+	auto size = Director::getInstance()->getVisibleSize();
+	auto dark = DarkLayer::create();
+	auto lose = LoseLayer::createLayer();
+	//lose->setPosition(size.width, size.height);
+	//dark->addChild(lose);
+	//dark->setPosition(0, 0);
+	//this->addChild(dark, 2);
+	lose->setPosition(size.width / 2, size.height / 2);
+	this->addChild(lose);
+}
+
+void GameScene::gameWin()
+{
+	auto size = Director::getInstance()->getVisibleSize();
+	auto dark = DarkLayer::create();
+	auto win = WinLayer::createLayer();
+	//lose->setPosition(size.width, size.height);
+	//dark->addChild(lose);
+	//dark->setPosition(0, 0);
+	//this->addChild(dark, 2);
+	win->setPosition(size.width / 2, size.height / 2);
+	this->addChild(win);
 }
 
 void GameScene::btn_set_callback(Ref* pSender, Widget::TouchEventType type)
@@ -355,4 +532,3 @@ void GameScene::btn_about_callback(Ref* pSender, Widget::TouchEventType type)
 
 	}
 }
-

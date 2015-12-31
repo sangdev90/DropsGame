@@ -144,15 +144,15 @@ void Drop::create_bullet(Vec2 position)
 	auto bullet_up = DropBullet::createSprite(position_up, Dir::Up, 16);
 	auto bullet_down = DropBullet::createSprite(postion_down, Dir::Down, 16);
 
+	// add bullet to DropBulletList
+	m_DropBulletList.pushBack(bullet_left);
+	m_DropBulletList.pushBack(bullet_right);
+	m_DropBulletList.pushBack(bullet_up);
+	m_DropBulletList.pushBack(bullet_down);
 	// show bullet
 	this->getParent()->addChild(bullet_left, 2);
 	this->getParent()->addChild(bullet_right, 2);
 	this->getParent()->addChild(bullet_up, 2);
 	this->getParent()->addChild(bullet_down, 2);
 
-	// add bullet to DropBulletList
-	m_DropBulletList.pushBack(bullet_left);
-	m_DropBulletList.pushBack(bullet_right);
-	m_DropBulletList.pushBack(bullet_up);
-	m_DropBulletList.pushBack(bullet_down);
 }

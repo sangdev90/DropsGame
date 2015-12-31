@@ -138,7 +138,10 @@ void DropBullet::blast()
 	this->setVisible(false);
 	auto explode = Sprite::createWithSpriteFrame(SpriteFrame::create("drops/bomb.png", Rect(0, 0, 96, 96)));
 	explode->setPosition(this->getPosition());
-	this->getParent()->addChild(explode, 2);
+	if (this->getParent())
+	{
+		this->getParent()->addChild(explode, 2);
+	}
 
 	// explode animation
 	explode->runAction(Sequence::create(

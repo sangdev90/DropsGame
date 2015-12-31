@@ -24,9 +24,19 @@ void DataUtils::save(DataType type, std::string data)
 			UDefault->setStringForKey("TopLevelTime", data);
 		}
 		break;
-	case CurrentGameLevel:
+	case GameLevel:
 		{
 			UDefault->setStringForKey("CurrentGameLevel", data);
+		}
+		break;
+	case GameScore:
+		{
+			UDefault->setStringForKey("GameScore", data);
+		}
+		break;
+	case GameDrops:
+		{
+			UDefault->setStringForKey("GameDrops", data);
 		}
 		break;
 	}
@@ -46,8 +56,14 @@ std::string DataUtils::read(DataType type)
 	case TopLevelTime:
 		return UDefault->getStringForKey("TopLevelTime");
 		break;
-	case CurrentGameLevel:
+	case GameLevel:
 		return UDefault->getStringForKey("CurrentGameLevel");
+		break;
+	case GameScore:
+		return UDefault->getStringForKey("GameScore");
+		break;
+	case GameDrops:
+		return UDefault->getStringForKey("GameDrops");
 		break;
 	}
 }
@@ -60,7 +76,7 @@ InputData DataUtils::read(const char* filename)
 	// zero to four
 	if (fscanf(file, "zero:%d one:%d two:%d three:%d four:%d", &zero, &one, &two, &three, &four))
 	{
-		log("The integer read was:%d\n", zero);
+		log("read");
 	} else {
 		fprintf(file, "Error reading an integer from file.\n");
 		exit(1);
@@ -73,6 +89,29 @@ InputData DataUtils::read(const char* filename)
 	result.three = three;
 	result, four = four;
 
+	return result;
+}
+
+GameInfo DataUtils::game_info(const char* filename)
+{
+	FILE * file = fopen(filename, "r+");
+	int maxClassicalLevel, maxExtremeLevel, gameVersion, initTankDrops;
+	char userName[10];
+	if (fscanf(file, "gameVersion:%d userName:%s maxClassicalLevel:%d maxExtremeLevel:%d initTankDrops:%d", 
+		&gameVersion, userName, &maxClassicalLevel, &maxExtremeLevel, &initTankDrops))
+	{
+		log("read");
+	}
+	else {
+		fprintf(file, "Error reading an integer from file.\n");
+		exit(1);
+	}
+	GameInfo result;
+	result.default_usernaem = gameVersion;
+	result.max_classical_level = maxClassicalLevel;
+	result.default_usernaem = userName;
+	result.max_extreme_level = maxExtremeLevel;
+	result.init_tank_drops = initTankDrops;
 	return result;
 }
 

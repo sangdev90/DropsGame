@@ -8,7 +8,7 @@ class WinLayer : public Layer
 public:
 	CREATE_FUNC(WinLayer);
 	virtual bool init();
-	static Layer* createScene();
+	static Layer* createLayer();
 
 	// btn callback
 	void btn_exit_callback(Ref* pSender);

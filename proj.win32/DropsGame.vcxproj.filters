@@ -75,6 +75,9 @@
     <ClCompile Include="..\Classes\Setting\Setting.cpp">
       <Filter>src\Setting</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameScene\DarkLayer.cpp">
+      <Filter>src\GameScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Setting\Setting.h">
       <Filter>src\Setting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameScene\DarkLayer.h">
+      <Filter>src\GameScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

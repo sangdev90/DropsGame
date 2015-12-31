@@ -40,6 +40,15 @@ public:
 	void btn_sound_callback(Ref* pSender, Widget::TouchEventType type);
 	void btn_about_callback(Ref* pSender, Widget::TouchEventType type);
 
+	// 更新水箱高度
+	void set_tank_fore_height(int number);
+
+	void gameLose();
+	void gameWin();
+
+	// 增加分数
+	void addPoints(int point);
+
 private:
 	int m_Time;  // game time
 	bool m_SetDown; // button set is clicked
@@ -62,13 +71,27 @@ private:
 	// btn -bg
 	Sprite* btn_bg;
 	Sprite* btn_nosound;
+	Sprite* tank_fore;
+	Sprite* tank_fore_top;
+
+	// label
+	TextBMFont* drops;
+	TextBMFont* round;
+	TextBMFont* score;
+	TextBMFont* game_type;
 
 	GameMode m_Gamemode;
 
 	// input data
 	InputData m_Input;
 
-public:
+	// 控制点击一次之后怕判断连击
+	bool m_Click;
+	int m_DropCount;   // 每次点击之后drop的计数
+	bool m_CoundBegin;
+	int m_upInt;       // 跟随count递增，避免多次增加水滴的操作
+
+private:
 	Vector<Drop*> m_DropList;
 
 	Vector<Drop*> m_DropDeleteList;

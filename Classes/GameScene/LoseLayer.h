@@ -8,7 +8,7 @@ class LoseLayer : public Layer
 public:
 	CREATE_FUNC(LoseLayer);
 	virtual bool init();
-	static Layer* createScene();
+	static Layer* createLayer();
 
 	// button callback
 	void btn_exit_callback(Ref* pSender);
