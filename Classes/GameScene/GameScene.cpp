@@ -164,6 +164,23 @@ bool GameScene::init(GameMode mode, int level)
 			bound_right->getPositionY() - bound_left->getPositionY());
 	}
 
+	// Extreme 检测边界
+	if (mode == GameMode::Extreme)
+	{
+		Node* bound_left_down = rootNode->getChildByName("bound_left_down");
+		Node* bound_left_top = rootNode->getChildByName("bound_left_top");
+		Node* bound_right_center = rootNode->getChildByName("bound_right_center");
+		Node* bound_right_top = rootNode->getChildByName("bound_right_top");
+		Node* bound_left_center = rootNode->getChildByName("bound_left_center");
+
+		m_GridBoundExtreamL = Rect(bound_left_down->getPositionX(), bound_left_down->getPositionY(), 
+			bound_left_top->getPositionX() - bound_left_down->getPositionX(), 
+			bound_left_top->getPositionY() - bound_left_down->getPositionY());
+		m_GridBoundExtreamR = Rect(bound_right_center->getPositionX(), bound_left_down->getPositionY(),
+			bound_right_top->getPositionX() - bound_right_center->getPositionX(),
+			bound_right_top->getPositionY() - bound_left_down->getPositionY());
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	auto game_info = DataUtils::game_info("data/game.config");
 	
@@ -231,7 +248,7 @@ bool GameScene::init(GameMode mode, int level)
 			m_DropList.pushBack(test);
 
 			// 更改游戏模式label
-			game_type->setText("Extreme");
+			//game_type->setText("Extreme");
 		}
 		break;
 	}
@@ -271,15 +288,19 @@ bool GameScene::init(GameMode mode, int level)
 						m_CoundBegin = false; // 判断计数开始点
 						m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
 					}
-					// 减少水箱水滴
-					auto num = atoi(DataUtils::read(GameDrops).c_str());
-					DataUtils::save(GameDrops, StringUtils::format("%d", num - 1)); // 减少
-					if (atoi(DataUtils::read(GameDrops).c_str()) > -1)
-					{
-						drops->setText(DataUtils::read(GameDrops));
+					// 减少水箱水滴 - classical mode
+					if (mode == GameMode::Classical) {
+						auto num = atoi(DataUtils::read(GameDrops).c_str());
+						DataUtils::save(GameDrops, StringUtils::format("%d", num - 1)); // 减少
+						if (atoi(DataUtils::read(GameDrops).c_str()) > -1)
+						{
+							drops->setText(DataUtils::read(GameDrops));
+						}
+						// 更新水箱高度
+						set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
 					}
-					// 更新水箱高度
-					set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
+
+					// extreme mode
 				}
 			}
 		}
@@ -358,7 +379,45 @@ void GameScene::update(float delta)
 		break;
 	case GameMode::Extreme:
 		{
-			
+			// add bullet to bulletDeleteList
+			for (int i = 0;i < m_DropBulletList.size();i++)
+			{
+				auto bullet = (DropBullet*)m_DropBulletList.at(i);
+				if ((bullet->getPositionX() < m_GridBoundExtreamL.getMinX()) | 
+					(bullet->getPositionX() > m_GridBoundExtreamR.getMaxX()) |
+					(bullet->getPositionY() < m_GridBoundExtreamL.getMinY()) |
+					(bullet->getPositionY() > m_GridBoundExtreamL.getMaxY()) |
+					(bullet->getPositionX() < m_ExtreamCenter.x && 
+						(bullet->getPositionY() > m_ExtreamCenter.y | bullet->getPositionY() < m_ExtreamCenter.y) 
+						&& bullet->getPositionX() > m_GridBoundExtreamL.getMaxX()) |
+					(bullet->getPositionX() > m_ExtreamCenter.x &&
+						(bullet->getPositionY() > m_ExtreamCenter.y | bullet->getPositionY() < m_ExtreamCenter.y)
+						&& bullet->getPositionX() < m_GridBoundExtreamL.getMinX()))
+				{
+					m_BulletDeleteList.pushBack(bullet);
+				}
+
+				// bullet and drops 
+				for (int j = 0;j < m_DropList.size();j++)
+				{
+					auto drop = (Drop*)m_DropList.at(j);
+					if ((drop->isAlive()) && (!drop->m_IsAtacking) && (drop->getPosition() - bullet->getPosition()).length() <= (drop->getR() + bullet->getR()))
+					{
+						// bullet attack drop
+						drop->m_IsAtacking = true;  // avoide upgrade to explode
+						if (drop->getState() != Drops_four)
+						{
+							drop->setState((enum DropsType)(drop->getState() + 1));  // upgrade drops
+							m_BulletCombineList.pushBack(bullet); // add bullet to combine list 
+						}
+						else
+						{
+							m_DropDeleteList.pushBack(drop);      // add drop to delete list
+							m_BulletCombineList.pushBack(bullet); // add bullet to combine list 
+						}
+					}
+				}
+			}
 		}
 		break;
 	}
