@@ -5,6 +5,8 @@
 
 #include "DropBulet.h"
 
+class GameScene;
+
 USING_NS_CC;
 using namespace cocos2d;
 using namespace cocos2d::ui;
@@ -23,8 +25,6 @@ class Drop : public Sprite
 public:
 	virtual bool init(Vec2 position, DropsType type);
 	static Drop* createSprite(Vec2 position, DropsType type);
-
-	void update(float delta); // uodate drop state
 
 	void blast();
 
@@ -52,5 +52,7 @@ private:
 	Texture2D * m_Texture_2;
 	Texture2D * m_Texture_3;
 	Texture2D * m_Texture_4;
+
+	GameScene * m_GameScene;
 };
 

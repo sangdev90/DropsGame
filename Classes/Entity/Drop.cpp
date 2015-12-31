@@ -1,4 +1,5 @@
 #include "Drop.h"
+#include "../GameScene/GameScene.h"
 
 bool Drop::init(Vec2 position, DropsType type)
 {
@@ -41,6 +42,7 @@ bool Drop::init(Vec2 position, DropsType type)
 
 	m_Sprite = shap;  // save sprite
 	m_Type = type;    // init state
+	m_GameScene = (GameScene*)this->getParent();
 
 	auto width = shap->getContentSize().width;
 	auto height = shap->getContentSize().height;
@@ -65,12 +67,6 @@ Drop* Drop::createSprite(Vec2 position, DropsType type)
 		pRet = nullptr;
 		return nullptr;
 	}
-}
-
-// update outlook and state of current drop
-void Drop::update(float delta)
-{
-	
 }
 
 void Drop::setState(DropsType state)
@@ -149,4 +145,10 @@ void Drop::create_bullet(Vec2 position)
 	this->getParent()->addChild(bullet_right, 2);
 	this->getParent()->addChild(bullet_up, 2);
 	this->getParent()->addChild(bullet_down, 2);
+
+	// add bullet to DropBulletList
+	//m_GameScene->m_DropBulletList.pushBack(bullet_left);
+	//m_GameScene->m_DropBulletList.pushBack(bullet_right);
+	//m_GameScene->m_DropBulletList.pushBack(bullet_up);
+	//m_GameScene->m_DropBulletList.pushBack(bullet_down);
 }

@@ -24,7 +24,12 @@ public:
 	static DropBullet* createSprite(Vec2 postion, Dir direction, int speed);
 	virtual bool init(Vec2 postion, Dir direction, int speed);
 
+	// bullet dispear
+	void bullet_dispear();
+
 	void update(float delta);
+
+	void blast();  // bullet explode
 
 private:
 	Dir    m_Direction;
@@ -33,4 +38,6 @@ private:
 
 	Sprite* m_Sprite;
 	Rect m_Rect;
+
+	Animate * m_Boom;
 };

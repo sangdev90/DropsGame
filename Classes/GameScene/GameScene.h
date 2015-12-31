@@ -8,6 +8,7 @@ USING_NS_CC;
 using namespace cocos2d;
 
 class Drop;
+class DropBullet;
 
 // two game mode 
 enum GameMode
@@ -25,6 +26,9 @@ public:
 	static Scene* createScene(GameMode mode, int level);
 	static GameScene* create(GameMode mode, int level);
 
+	// game update : game logic
+	void update(float delta);
+
 private:
 	int m_Time;  // game time
 	Vec2 m_ClassicalPos[6][6];
@@ -32,6 +36,17 @@ private:
 	Vec2 m_ExtreamPosR[5][3];
 	Vec2 m_ExtreamCenter;
 
-	Drop * test;
+	//Drop * test;
+
+	Rect m_GridBoundClassical; // rect for bullet ContactListen
+	Rect m_GridBoundExtreamL;
+	Rect m_GridBoundExtreamR;
+
+public:
+	Vector<Drop*> m_DropList;
+	Vector<DropBullet*> m_DropBulletList;
+
+	Vector<Drop*> m_DropDeleteList;
+	Vector<DropBullet*> m_BulletDeleteList;
 };
 

@@ -60,8 +60,24 @@ bool DropBullet::init(Vec2 postion, Dir direction, int speed)
 	m_Speed = speed;
 
 	this->scheduleUpdate();  // update position of bullet
+
+	// create boom animation
+	Vector<SpriteFrame* >frameVector;
+	for (int i = 0;i < 5;i++)
+	{
+		auto spriteFrame = SpriteFrame::create("drops/bomb.png", Rect(0, i * 96, 96, 96));
+		frameVector.pushBack(spriteFrame);
+	}
+	auto animation = Animation::createWithSpriteFrames(frameVector);
+	animation->setDelayPerUnit(0.07f);
+	m_Boom = Animate::create(animation);
 	
 	return true;
+}
+
+void DropBullet::bullet_dispear()
+{
+	this->removeFromParent(); // remove
 }
 
 // update frame
@@ -84,5 +100,14 @@ void DropBullet::update(float delta)
 	default:
 		break;
 	}
+}
+
+void DropBullet::blast()
+{
+	this->setVisible(false);
+	this->runAction(Sequence::create(
+		m_Boom,
+		CallFunc::create(this, callfunc_selector(DropBullet::bullet_dispear)),
+		NULL));
 }
 

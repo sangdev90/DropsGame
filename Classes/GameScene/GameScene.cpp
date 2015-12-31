@@ -86,11 +86,26 @@ bool GameScene::init(GameMode mode, int level)
 	TextBMFont* round = static_cast<TextBMFont*>(game_layer->getChildByName("round"));
 	TextBMFont* score = static_cast<TextBMFont*>(game_layer->getChildByName("score"));
 
-	// add objects
-	test = Drop::createSprite(m_ClassicalPos[2][2], DropsType::Drops_one);
-	this->addChild(test, 2);
+	// Rect classical
+	Node* bound_left = rootNode->getChildByName("bound_left");
+	Node* bound_right = rootNode->getChildByName("bound_right");
+	m_GridBoundClassical = Rect(bound_left->getPositionX(), bound_left->getPositionY(), 
+		bound_right->getPositionX() - bound_left->getPositionX(), 
+		bound_right->getPositionY() - bound_left->getPositionY());
 
-	// touch event
+	//////////////////////////////////////////////////////////////////////////
+
+	// add objects
+	auto test = Drop::createSprite(m_ClassicalPos[2][2], DropsType::Drops_one);
+	m_DropList.pushBack(test);
+	
+	// show objects
+	for (int i = 0;i < m_DropList.size();i++)
+	{
+		this->addChild(m_DropList.at(i), 2);
+	}
+
+	// add touch event
 	auto event = EventListenerTouchOneByOne::create();
 	event->onTouchBegan = [&](Touch * tou, Event * eve) {
 		return true;
@@ -100,20 +115,28 @@ bool GameScene::init(GameMode mode, int level)
 	};
 	event->onTouchEnded = [&](Touch * tou, Event * eve) {
 		auto location = tou->getLocation();
-		auto rect = test->getRect();
-		if (location.x > rect.getMinX() && location.x < rect.getMaxX() && location.y > rect.getMinY() && location.y < rect.getMaxY())
+
+		// update all drops
+		for (int i = 0;i < m_DropList.size();i++)
 		{
-			if (test->getState() != Drops_four)
+			auto rect = m_DropList.at(i)->getRect();
+			if (location.x > rect.getMinX() && location.x < rect.getMaxX() && location.y > rect.getMinY() && location.y < rect.getMaxY())
 			{
-				test->setState((enum DropsType)(test->getState() + 1));  // upgrade drops
-			}
-			else
-			{
-				test->blast();  // drop explodes
+				if (m_DropList.at(i)->getState() != Drops_four)
+				{
+					m_DropList.at(i)->setState((enum DropsType)(m_DropList.at(i)->getState() + 1));  // upgrade drops
+				}
+				else
+				{
+					m_DropList.at(i)->blast();  // drop explodes
+					m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
+				}
 			}
 		}
 	};
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(event, this);
+
+	this->scheduleUpdate();  // update game
 
 	return true;
 }
@@ -140,6 +163,26 @@ GameScene* GameScene::create(GameMode mode, int level)
 		delete pRet;
 		pRet = nullptr;
 		return nullptr;
+	}
+}
+
+void GameScene::update(float delta)
+{
+	// update DropList and DropDeleteList
+	for (int i = 0;i < m_DropDeleteList.size(); i++)
+	{
+		auto obj = (Drop*)m_DropDeleteList.at(i);
+		m_DropDeleteList.eraseObject(obj);
+		m_DropList.eraseObject(obj);
+	}
+
+	for (int i = 0;i < m_DropBulletList.size();i++)
+	{
+		auto bullet = (DropBullet*)m_DropBulletList.at(i);
+		if (bullet->getPositionX() <= m_GridBoundClassical.getMinX())
+		{
+			bullet->blast();
+		}
 	}
 }
 
