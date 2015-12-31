@@ -13,6 +13,7 @@ bool GameScene::init(GameMode mode, int level)
 	// init game scene here
 
 	m_SetDown = false;
+	m_SoundDown = false;
 	m_Gamemode = mode;
 
 	Node* rootNode = NULL;
@@ -29,7 +30,7 @@ bool GameScene::init(GameMode mode, int level)
 			}
 		}
 		break;
-	case Extream:
+	case Extreme:
 		rootNode = CSLoader::createNode("game-extream.csb");
 		for (int i = 0;i < 5;i++)
 		{
@@ -74,12 +75,17 @@ bool GameScene::init(GameMode mode, int level)
 
 	// set button event
 	btn_set->addTouchEventListener(CC_CALLBACK_2(GameScene::btn_set_callback, this));
+	btn_about->addTouchEventListener(CC_CALLBACK_2(GameScene::btn_about_callback, this));
+	btn_restart->addTouchEventListener(CC_CALLBACK_2(GameScene::btn_restart_callback, this));
+	btn_sound->addTouchEventListener(CC_CALLBACK_2(GameScene::btn_sound_callback, this));
 
 	btn_bg = static_cast<Sprite*>(rootNode->getChildByName("btn-bg"));
+	btn_nosound = static_cast<Sprite*>(rootNode->getChildByName("no_sound"));
 	btn_bg->setVisible(false);     // default visible : false
 	btn_about->setVisible(false);
 	btn_restart->setVisible(false);
 	btn_sound->setVisible(false);
+	btn_nosound->setVisible(false);
 
 	TextBMFont* game_time = static_cast<TextBMFont*>(rootNode->getChildByName("game-time")); // game time 
 	TextBMFont* top_round = static_cast<TextBMFont*>(rootNode->getChildByName("top-round")); // game record 
@@ -107,14 +113,38 @@ bool GameScene::init(GameMode mode, int level)
 	{
 	case Classical:  // classical game
 		{
-			auto test = Drop::createSprite(m_ClassicalPos[2][2], DropsType::Drops_one);
-			m_DropList.pushBack(test);
+			auto data = DataUtils::read("data/level1.lev");
+			DropsType type = DropsType::Drops_one;
+			for (int i = 0; i < 6; i++)
+			{
+				for (int j = 0; j < 6; j++)
+				{
+					int tmp = rand_0_1() * 100 / 1;
+					if (tmp < data.zero)
+					{
+						type = DropsType::Drops_zero;
+					}else if(tmp < data.one) {
+						type = DropsType::Drops_one;
+					} else if (tmp < data.two)
+					{
+						type = DropsType::Drops_two;
+					} else if (tmp < data.three)
+					{
+						type = DropsType::Drops_three;
+					} else {
+						type = DropsType::Drops_four;
+					}
 
-			auto test2 = Drop::createSprite(m_ClassicalPos[2][1], DropsType::Drops_four);
-			m_DropList.pushBack(test2);
+					if (type == DropsType::Drops_zero) {
+						continue;
+					}
+					auto drop = Drop::createSprite(m_ClassicalPos[i][j], type);
+					m_DropList.pushBack(drop);
+				}
+			}
 		}
 		break;
-	case Extream:  // extream game
+	case Extreme:  // extream game
 		{
 			auto test = Drop::createSprite(m_ExtreamPosL[2][2], DropsType::Drops_one);
 			m_DropList.pushBack(test);
@@ -216,6 +246,7 @@ void GameScene::update(float delta)
 						if (drop->getState() != Drops_four)
 						{
 							drop->setState((enum DropsType)(drop->getState() + 1));  // upgrade drops
+							m_BulletCombineList.pushBack(bullet); // add bullet to combine list 
 						}
 						else
 						{
@@ -227,7 +258,7 @@ void GameScene::update(float delta)
 			}
 		}
 		break;
-	case GameMode::Extream:
+	case GameMode::Extreme:
 		{
 		}
 		break;
@@ -281,6 +312,47 @@ void GameScene::btn_set_callback(Ref* pSender, Widget::TouchEventType type)
 			btn_restart->setVisible(false);
 			btn_sound->setVisible(false);
 		}
+	}
+}
+
+void GameScene::btn_restart_callback(Ref* pSender, Widget::TouchEventType type)
+{
+	if (type == Widget::TouchEventType::ENDED)
+	{
+		// restart game scene
+		if (m_Gamemode == GameMode::Classical)
+		{
+			Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, GameScene::createScene(GameMode::Classical, 1)));
+		}
+		else {
+			Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, GameScene::createScene(GameMode::Extreme, 1)));
+		}
+	}
+}
+
+// sound btn callback
+void GameScene::btn_sound_callback(Ref* pSender, Widget::TouchEventType type)
+{
+	if (type == Widget::TouchEventType::ENDED)
+	{
+		m_SoundDown = !m_SoundDown;
+		if (m_SoundDown)
+		{
+			btn_nosound->setVisible(true);
+			// stop sound
+		}
+		else {
+			btn_nosound->setVisible(false);
+			// resume sound
+		}
+	}
+}
+
+void GameScene::btn_about_callback(Ref* pSender, Widget::TouchEventType type)
+{
+	if (type == Widget::TouchEventType::ENDED)
+	{
+
 	}
 }
 

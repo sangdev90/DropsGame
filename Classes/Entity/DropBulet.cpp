@@ -78,7 +78,9 @@ bool DropBullet::init(Vec2 postion, Dir direction, int speed)
 void DropBullet::explode_dispear(Sprite *pSender)
 {
 	pSender->removeFromParent(); // remove
-	this->removeFromParent();
+	// if (this != NULL) {
+	//	 this->removeFromParent();  // bug !!!
+	// }
 }
 
 void DropBullet::combine_dispear()
@@ -89,6 +91,7 @@ void DropBullet::combine_dispear()
 
 void DropBullet::combine()
 {
+	this->unscheduleUpdate(); // stop moving
 	this->runAction(Sequence::create(
 		ScaleTo::create(0.05, 1.2),
 		FadeOut::create(0.03),
@@ -134,7 +137,6 @@ void DropBullet::blast()
 
 	this->setVisible(false);
 	auto explode = Sprite::createWithSpriteFrame(SpriteFrame::create("drops/bomb.png", Rect(0, 0, 96, 96)));
-	explode->setScale(0.8);
 	explode->setPosition(this->getPosition());
 	this->getParent()->addChild(explode, 2);
 

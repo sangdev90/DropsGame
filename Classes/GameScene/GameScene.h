@@ -6,6 +6,7 @@
 #include "cocos2d.h"
 #include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
+#include "../DataUtils/DataUtils.h"
 USING_NS_CC;
 using namespace cocos2d;
 using namespace cocos2d::ui;
@@ -17,7 +18,7 @@ class DropBullet;
 enum GameMode
 {
 	Classical,
-	Extream
+	Extreme
 };
 
 class GameScene : public Layer
@@ -35,16 +36,18 @@ public:
 	// button callback
 	// void btn_set_callback(Ref* pSender);
 	void btn_set_callback(Ref* pSender, Widget::TouchEventType type);
+	void btn_restart_callback(Ref* pSender, Widget::TouchEventType type);
+	void btn_sound_callback(Ref* pSender, Widget::TouchEventType type);
+	void btn_about_callback(Ref* pSender, Widget::TouchEventType type);
 
 private:
 	int m_Time;  // game time
 	bool m_SetDown; // button set is clicked
+	bool m_SoundDown;
 	Vec2 m_ClassicalPos[6][6];
 	Vec2 m_ExtreamPosL[5][3];
 	Vec2 m_ExtreamPosR[5][3];
 	Vec2 m_ExtreamCenter;
-
-	DropBullet * test;
 
 	Rect m_GridBoundClassical; // rect for bullet ContactListen
 	Rect m_GridBoundExtreamL;
@@ -58,8 +61,12 @@ private:
 
 	// btn -bg
 	Sprite* btn_bg;
+	Sprite* btn_nosound;
 
 	GameMode m_Gamemode;
+
+	// input data
+	InputData m_Input;
 
 public:
 	Vector<Drop*> m_DropList;

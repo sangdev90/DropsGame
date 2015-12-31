@@ -11,7 +11,8 @@ using namespace cocos2d::ui;
 using namespace cocostudio;
 enum DropsType
 {
-	Drops_one = 1,   // one drop
+	Drops_zero,
+	Drops_one,       // one drop
 	Drops_two,		 // two drops
 	Drops_three,	 // three drops
 	Drops_four,		 // four drops
