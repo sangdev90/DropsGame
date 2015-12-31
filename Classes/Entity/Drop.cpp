@@ -1,6 +1,8 @@
 #include "Drop.h"
 #include "../GameScene/GameScene.h"
 
+Vector<DropBullet*> m_DropBulletList;
+
 bool Drop::init(Vec2 position, DropsType type)
 {
 	if (!Sprite::init())
@@ -42,7 +44,6 @@ bool Drop::init(Vec2 position, DropsType type)
 
 	m_Sprite = shap;  // save sprite
 	m_Type = type;    // init state
-	m_GameScene = (GameScene*)this->getParent();
 
 	auto width = shap->getContentSize().width;
 	auto height = shap->getContentSize().height;
@@ -147,8 +148,8 @@ void Drop::create_bullet(Vec2 position)
 	this->getParent()->addChild(bullet_down, 2);
 
 	// add bullet to DropBulletList
-	//m_GameScene->m_DropBulletList.pushBack(bullet_left);
-	//m_GameScene->m_DropBulletList.pushBack(bullet_right);
-	//m_GameScene->m_DropBulletList.pushBack(bullet_up);
-	//m_GameScene->m_DropBulletList.pushBack(bullet_down);
+	m_DropBulletList.pushBack(bullet_left);
+	m_DropBulletList.pushBack(bullet_right);
+	m_DropBulletList.pushBack(bullet_up);
+	m_DropBulletList.pushBack(bullet_down);
 }

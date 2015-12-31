@@ -3,8 +3,11 @@
 #include "ui/CocosGUI.h"
 
 #include "../Entity/Drop.h"
+#include "../Entity/DropBulet.h"
 
 using namespace cocos2d::ui;
+
+extern Vector<DropBullet*> m_DropBulletList;
 
 bool GameScene::init(GameMode mode, int level)
 {
@@ -128,7 +131,6 @@ bool GameScene::init(GameMode mode, int level)
 				}
 				else
 				{
-					m_DropList.at(i)->blast();  // drop explodes
 					m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
 				}
 			}
@@ -172,17 +174,33 @@ void GameScene::update(float delta)
 	for (int i = 0;i < m_DropDeleteList.size(); i++)
 	{
 		auto obj = (Drop*)m_DropDeleteList.at(i);
+		obj->blast();
 		m_DropDeleteList.eraseObject(obj);
 		m_DropList.eraseObject(obj);
 	}
 
+	// add bullet to bulletDeleteList
 	for (int i = 0;i < m_DropBulletList.size();i++)
 	{
 		auto bullet = (DropBullet*)m_DropBulletList.at(i);
-		if (bullet->getPositionX() <= m_GridBoundClassical.getMinX())
+		if (bullet->getPositionX() <= m_GridBoundClassical.getMinX() | 
+			bullet->getPositionX() >= m_GridBoundClassical.getMaxX() | 
+			bullet->getPositionY() <= m_GridBoundClassical.getMinY() |
+			bullet->getPositionY() >= m_GridBoundClassical.getMaxY() )
 		{
-			bullet->blast();
+			m_BulletDeleteList.pushBack(bullet);
 		}
 	}
+
+	// update bullet delete list
+	for (int i = 0;i < m_BulletDeleteList.size();i++)
+	{
+		auto bullet = (DropBullet*)m_BulletDeleteList.at(i);
+		bullet->blast();
+		m_BulletDeleteList.eraseObject(bullet);
+		m_DropBulletList.eraseObject(bullet);
+	}
+
+	
 }
 

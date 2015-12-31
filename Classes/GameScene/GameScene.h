@@ -36,7 +36,7 @@ private:
 	Vec2 m_ExtreamPosR[5][3];
 	Vec2 m_ExtreamCenter;
 
-	//Drop * test;
+	DropBullet * test;
 
 	Rect m_GridBoundClassical; // rect for bullet ContactListen
 	Rect m_GridBoundExtreamL;
@@ -44,7 +44,6 @@ private:
 
 public:
 	Vector<Drop*> m_DropList;
-	Vector<DropBullet*> m_DropBulletList;
 
 	Vector<Drop*> m_DropDeleteList;
 	Vector<DropBullet*> m_BulletDeleteList;

@@ -25,7 +25,13 @@ public:
 	virtual bool init(Vec2 postion, Dir direction, int speed);
 
 	// bullet dispear
-	void bullet_dispear();
+	void explode_dispear(Sprite *pSender);
+
+	// dispear 
+	void combine_dispear();
+
+	// bullet join to drop
+	void combine();
 
 	void update(float delta);
 
@@ -36,8 +42,8 @@ private:
 	int    m_Speed;
 	bool   m_Alive;     // show bullet
 
-	Sprite* m_Sprite;
+	Sprite * m_Sprite;
 	Rect m_Rect;
 
-	Animate * m_Boom;
+	Animate * m_AnimateBoom;
 };

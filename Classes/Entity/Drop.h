@@ -5,8 +5,6 @@
 
 #include "DropBulet.h"
 
-class GameScene;
-
 USING_NS_CC;
 using namespace cocos2d;
 using namespace cocos2d::ui;
@@ -52,7 +50,5 @@ private:
 	Texture2D * m_Texture_2;
 	Texture2D * m_Texture_3;
 	Texture2D * m_Texture_4;
-
-	GameScene * m_GameScene;
 };
 

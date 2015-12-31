@@ -53,7 +53,7 @@ bool DropBullet::init(Vec2 postion, Dir direction, int speed)
 
 	auto width = m_Sprite->getContentSize().width;
 	auto height = m_Sprite->getContentSize().height;
-	m_Rect = Rect(postion.x - 2 * width, postion.y - 2 * height, 4 * width, 4 * height);
+	m_Rect = Rect(postion.x - width / 2, postion.y - height / 2, width, height);
 
 	// save direction and speed
 	m_Direction = direction;
@@ -61,23 +61,38 @@ bool DropBullet::init(Vec2 postion, Dir direction, int speed)
 
 	this->scheduleUpdate();  // update position of bullet
 
-	// create boom animation
-	Vector<SpriteFrame* >frameVector;
+	Vector<SpriteFrame*> frameVector;
 	for (int i = 0;i < 5;i++)
 	{
-		auto spriteFrame = SpriteFrame::create("drops/bomb.png", Rect(0, i * 96, 96, 96));
+		auto spriteFrame = SpriteFrame::create(StringUtils::format("drops/bomb%d.png", i + 1), Rect(0, 0, 96, 96));
 		frameVector.pushBack(spriteFrame);
 	}
 	auto animation = Animation::createWithSpriteFrames(frameVector);
 	animation->setDelayPerUnit(0.07f);
-	m_Boom = Animate::create(animation);
+	m_AnimateBoom = Animate::create(animation);
 	
 	return true;
 }
 
-void DropBullet::bullet_dispear()
+void DropBullet::explode_dispear(Sprite *pSender)
 {
-	this->removeFromParent(); // remove
+	pSender->removeFromParent(); // remove
+	this->removeFromParent();
+}
+
+void DropBullet::combine_dispear()
+{
+	this->setVisible(false);
+	this->removeFromParent();
+}
+
+void DropBullet::combine()
+{
+	this->runAction(Sequence::create(
+		ScaleTo::create(0.05, 1.2),
+		FadeOut::create(0.03),
+		CallFunc::create(CC_CALLBACK_0(DropBullet::combine_dispear, this)),
+		NULL));
 }
 
 // update frame
@@ -102,12 +117,30 @@ void DropBullet::update(float delta)
 	}
 }
 
+// bullet explode
 void DropBullet::blast()
 {
+	// create animation
+	Vector<SpriteFrame*> frameVector;
+	for (int i = 0;i < 5;i++)
+	{
+		auto spriteFrame = SpriteFrame::create(StringUtils::format("drops/bomb%d.png", i + 1), Rect(0, 0, 96, 96));
+		frameVector.pushBack(spriteFrame);
+	}
+	auto animation = Animation::createWithSpriteFrames(frameVector);
+	animation->setDelayPerUnit(0.07f);
+	auto AnimateBoom = Animate::create(animation);
+
 	this->setVisible(false);
-	this->runAction(Sequence::create(
-		m_Boom,
-		CallFunc::create(this, callfunc_selector(DropBullet::bullet_dispear)),
+	auto explode = Sprite::createWithSpriteFrame(SpriteFrame::create("drops/bomb.png", Rect(0, 0, 96, 96)));
+	explode->setScale(0.8);
+	explode->setPosition(this->getPosition());
+	this->getParent()->addChild(explode, 2);
+
+	// explode animation
+	explode->runAction(Sequence::create(
+		AnimateBoom,
+		CallFunc::create(CC_CALLBACK_0(DropBullet::explode_dispear, this, explode)),
 		NULL));
 }
 
