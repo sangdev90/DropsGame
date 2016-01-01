@@ -527,11 +527,10 @@ void GameScene::gameLose()
     lose->setScale(2.0f);
 	lose->setPosition(1536, 1200);
     lose->setAnchorPoint(Vec2(0.5, 0.5));
-    lose->runAction(Sequence::create(MoveBy::create(0.5, Vec2(0, 80)), MoveBy::create(0.3, Vec2(0, -80)),
-                                    MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
+    lose->runAction(Sequence::create(MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
                                     NULL));
-    lose->runAction(Sequence::create(ScaleBy::create(0.5, 1.2), ScaleBy::create(0.3, 0.5),ScaleBy::create(0.5, 1.2),
-                                    CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, lose)), NULL));
+    //lose->runAction(Sequence::create(ScaleBy::create(0.5, 1.2), ScaleBy::create(0.3, 0.5),ScaleBy::create(0.5, 1.2),
+    //                                CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, lose)), NULL));
     this->addChild(dark, 5);
 	this->addChild(lose, 6);
 }
@@ -545,11 +544,10 @@ void GameScene::gameWin()
 	win->setScale(2.0f);
 	win->setPosition(1536, 1200);
     win->setAnchorPoint(Vec2(0.5, 0.5));
-    win->runAction(Sequence::create(MoveBy::create(0.5, Vec2(0, 80)), MoveBy::create(0.3, Vec2(0, -80)),
-                                    MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
+    win->runAction(Sequence::create(MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
                                     NULL));
-    win->runAction(Sequence::create(ScaleBy::create(0.4, 1.2), ScaleBy::create(0.2, 0.5), ScaleBy::create(0.5, 1.2),
-                                    CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, win)), NULL));
+    //win->runAction(Sequence::create(ScaleBy::create(0.4, 1.2), ScaleBy::create(0.2, 0.5), ScaleBy::create(0.5, 1.2),
+                                    //CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, win)), NULL));
 	this->addChild(dark, 5);
 	this->addChild(win, 6);
 }
