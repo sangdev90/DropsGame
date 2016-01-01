@@ -21,12 +21,26 @@ void GameScene::set_tank_fore_height(int number)
 	{
 		tank_fore_top->setVisible(false);
 	}
+	else if (number == 1)
+	{
+		tank_fore_top->setVisible(true);
+		tank_fore_top->setScaleX(0.7 * 0.0907); // 0.0907 是csb文件中tank_fore_top的X放缩比例
+	}
+	else if (number == 2)
+	{
+		tank_fore_top->setVisible(true);
+		tank_fore_top->setScaleX(0.9 * 0.0907);
+	}
 	else {
+		tank_fore_top->setScaleX(1.0 * 0.0907);
 		tank_fore_top->setVisible(true);
 	}
+	
+	
 	number = minInt(number, 20); // 限制高度 水滴数量不限制
-	tank_fore->setScaleY(number / 20.0 * 0.3);
-	tank_fore_top->setPositionY(tank_fore->getPositionY() + tank_fore->getContentSize().height * number / 20.0 * 0.3);
+	auto tmp = tank_fore->getTextureRect();
+	tank_fore->setTextureRect(Rect(0, 620 - number / 20.0 * 620, 230, number / 20.0 * 620));
+	tank_fore_top->setPositionY(tank_fore->getPositionY() + number / 20.0 * 620 * 0.3);  // 0.3为csb文件中tank_fore的Y放缩比例
 }
 
 // 增加分数
@@ -274,6 +288,15 @@ bool GameScene::init(GameMode mode, int level)
 
 	};
 	event->onTouchEnded = [&](Touch * tou, Event * eve) {
+		if (m_SetDown)
+		{
+			m_SetDown = false;
+			btn_nosound->setVisible(false);
+			btn_bg->setVisible(false);     // default visible : false
+			btn_about->setVisible(false);
+			btn_restart->setVisible(false);
+			btn_sound->setVisible(false);
+		}
 		if (!m_Click)
 		{
 			auto location = tou->getLocation();
