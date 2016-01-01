@@ -1,7 +1,9 @@
 #include "Drop.h"
 #include "../GameScene/GameScene.h"
+#include "../Audio/Audio.h"
 
 Vector<DropBullet*> m_DropBulletList;
+bool m_HaveExplode;
 
 bool Drop::init(Vec2 position, DropsType type)
 {
@@ -105,6 +107,7 @@ void Drop::drop_dispear()
 // drop upgrade
 void Drop::drop_upgrade()
 {
+	Audio::play_effect("audio/pop1.wav");
 	this->removeChild(m_Sprite, true);  // remove 
 	switch (m_Type)
 	{
@@ -132,6 +135,8 @@ void Drop::drop_upgrade()
 // new four bullet
 void Drop::create_bullet(Vec2 position)
 {
+	Audio::play_effect("audio/pop5.wav");
+
 	// position of four bullet
 	Vec2 position_left = this->getPosition() - Vec2(70, 0);
 	Vec2 position_right = this->getPosition() + Vec2(70, 0);
@@ -155,4 +160,6 @@ void Drop::create_bullet(Vec2 position)
 	this->getParent()->addChild(bullet_up, 2);
 	this->getParent()->addChild(bullet_down, 2);
 
+	// 产生bullet之后，释放控制
+	m_HaveExplode = false;
 }

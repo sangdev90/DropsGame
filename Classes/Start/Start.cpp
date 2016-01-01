@@ -6,6 +6,8 @@
 #include "../Help/Help.h"
 #include "../Setting/Setting.h"
 
+#include "../Audio/Audio.h"
+
 using namespace cocos2d::ui;
 
 bool Start::init()
@@ -48,18 +50,21 @@ bool Start::init()
 void Start::start_callback(Ref* pSender)
 {
     // jump to loading scene
+	Audio::play_effect("audio/button.wav");
     Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Loading::createScene()));
 }
 
 void Start::help_callback(Ref* pSender)
 {
     // jump to help scene
+	Audio::play_effect("audio/button.wav");
     Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Help::createScene()));
 }
 
 void Start::set_callback(Ref* pSender)
 {
     // jump to setting scene
+	Audio::play_effect("audio/button.wav");
     Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Setting::createScene()));
 }
 

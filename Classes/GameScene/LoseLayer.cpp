@@ -6,6 +6,7 @@ using namespace cocostudio;
 
 #include "../Start/Start.h"
 #include "DarkLayer.h"
+#include "../Audio/Audio.h"
 
 bool LoseLayer::init()
 {
@@ -43,6 +44,7 @@ Layer* LoseLayer::createLayer()
 void LoseLayer::btn_exit_callback(Ref* pSender)
 {
 	// exit app
+	Audio::play_effect("audio/button.wav");
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.", "Alert");
 	return;
@@ -58,6 +60,7 @@ void LoseLayer::btn_exit_callback(Ref* pSender)
 void LoseLayer::btn_restart_callback(Ref* pSender)
 {
 	// restart current game scene 
+	Audio::play_effect("audio/button.wav");
 	Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Start::createScene()));
 }
 

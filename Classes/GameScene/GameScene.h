@@ -45,6 +45,8 @@ public:
 
 	void gameLose();
 	void gameWin();
+    
+    void layer_back(Ref* pSender);
 
 	// 增加分数
 	void addPoints(int point);
@@ -61,6 +63,9 @@ private:
 	Rect m_GridBoundClassical; // rect for bullet ContactListen
 	Rect m_GridBoundExtreamL;
 	Rect m_GridBoundExtreamR;
+    
+    // game action
+    cocostudio::timeline::ActionTimeline * action;
 
 	// btn
 	Button* btn_set;

@@ -9,9 +9,10 @@ bool DarkLayer::init()
 	auto size = Director::getInstance()->getVisibleSize();
 	auto back = LayerColor::create();
 	back->setColor(Color3B(0, 0, 0));
-	back->setOpacity(150);
+	back->setOpacity(190);
 	back->setPosition(0, 0);
 	back->setContentSize(Size(size.width, size.height));
+	back->setAnchorPoint(Vec2(0, 0));
 	this->addChild(back);
 
 	auto touchlistener = EventListenerTouchOneByOne::create();

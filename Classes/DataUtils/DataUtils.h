@@ -13,7 +13,7 @@ enum DataType
 	TopLevelTime,
 	GameLevel,
 	GameScore,
-	GameDrops,
+	GameDrops
 };
 
 // input file data

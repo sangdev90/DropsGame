@@ -3,6 +3,8 @@
 #include "ui/CocosGUI.h"
 using namespace cocos2d::ui;
 
+#include "../Audio/Audio.h"
+
 DropBullet* DropBullet::createSprite(Vec2 postion, Dir direction, int speed)
 {
 	DropBullet *pRet = new(std::nothrow) DropBullet();
@@ -124,6 +126,7 @@ void DropBullet::update(float delta)
 // bullet explode
 void DropBullet::blast()
 {
+	Audio::play_effect("audio/pop4.wav");
 	// create animation
 	Vector<SpriteFrame*> frameVector;
 	for (int i = 0;i < 5;i++)

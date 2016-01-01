@@ -34,6 +34,9 @@
     <Filter Include="src\Setting">
       <UniqueIdentifier>{d7a79434-c0a2-4567-9a89-e069097f3b4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Audio">
+      <UniqueIdentifier>{8d96d57d-8b34-4c79-a609-249a9ea34c59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +81,9 @@
     <ClCompile Include="..\Classes\GameScene\DarkLayer.cpp">
       <Filter>src\GameScene</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Audio\Audio.cpp">
+      <Filter>src\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -121,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameScene\DarkLayer.h">
       <Filter>src\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Audio\Audio.h">
+      <Filter>src\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

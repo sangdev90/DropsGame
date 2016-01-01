@@ -4,6 +4,7 @@
 using namespace cocos2d::ui;
 
 #include "GameScene.h"
+#include "../Audio/Audio.h"
 
 bool WinLayer::init()
 {
@@ -41,6 +42,7 @@ Layer* WinLayer::createLayer()
 void WinLayer::btn_exit_callback(Ref* pSender)
 {
 	// exit app
+	Audio::play_effect("audio/button.wav");
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.", "Alert");
 	return;
@@ -56,9 +58,14 @@ void WinLayer::btn_exit_callback(Ref* pSender)
 void WinLayer::btn_next_callback(Ref* pSender)
 {
 	// load game scene next round
+	Audio::play_effect("audio/button.wav");
 	int cur = atoi(DataUtils::read(GameLevel).c_str());
 	if (cur < DataUtils::game_info("data/game.config").max_classical_level)
 	{
 		Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, GameScene::createScene(GameMode::Classical, cur + 1)));
+	}
+	else { // 超过100关，概率不再更改
+		auto lev = DataUtils::game_info("data/game.config").max_classical_level; 
+		Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, GameScene::createScene(GameMode::Classical, lev)));
 	}
 }

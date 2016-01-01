@@ -5,8 +5,10 @@
 #include "LoseLayer.h"
 #include "WinLayer.h"
 #include "DarkLayer.h"
+#include "../Audio/Audio.h"
 
 extern Vector<DropBullet*> m_DropBulletList;
+extern bool m_HaveExplode;	// have explode : 避免产生时间间隙，提前结束计数
 
 int minInt(int a, int b)
 {
@@ -32,7 +34,7 @@ void GameScene::addPoints(int point)
 {
 	int p = atoi(DataUtils::read(GameScore).c_str());
 	DataUtils::save(GameScore, StringUtils::format("%d", p + point));
-	score->setText(DataUtils::read(GameScore));
+	score->setString(DataUtils::read(GameScore));
 }
 
 bool GameScene::init(GameMode mode, int level)
@@ -48,6 +50,7 @@ bool GameScene::init(GameMode mode, int level)
 	m_Gamemode = mode;
 	m_Click = false;
 	m_DropCount = 0;
+	m_HaveExplode = false;
 
 	Node* rootNode = NULL;
 	switch (mode)
@@ -94,7 +97,8 @@ bool GameScene::init(GameMode mode, int level)
 	addChild(rootNode);
 
 	// load action
-	auto action = CSLoader::createTimeline("game-classical.csb");
+	action = CSLoader::createTimeline("game-classical.csb");
+    action->setTag(11110);
 	rootNode->runAction(action);
 
 	// run action by frame
@@ -120,7 +124,8 @@ bool GameScene::init(GameMode mode, int level)
 	btn_sound->setVisible(false);
 	btn_nosound->setVisible(false);
 
-	TextBMFont* game_time = static_cast<TextBMFont*>(rootNode->getChildByName("game-time")); // game time 
+	TextBMFont* game_time = static_cast<TextBMFont*>(rootNode->getChildByName("game-time")); // game time
+    game_time->setVisible(false);
 	TextBMFont* top_round = static_cast<TextBMFont*>(rootNode->getChildByName("top-round")); // game record 
 
 	// game layer
@@ -136,22 +141,22 @@ bool GameScene::init(GameMode mode, int level)
 	{
 		DataUtils::save(TopLevel, StringUtils::format("%d", level));
 	}
-	top_round->setText(StringUtils::format("%d", atoi(DataUtils::read(TopLevel).c_str())));
+	top_round->setString(StringUtils::format("%d", atoi(DataUtils::read(TopLevel).c_str())));
 
 	// 更新当前level
 	DataUtils::save(GameLevel, StringUtils::format("%d", level));
 
 	// 更新round
-	round->setText(StringUtils::format("%d", level));
+	round->setString(StringUtils::format("%d", level));
 
 	// 更新score
 	if (level == 1)
 	{
-		score->setText("0");
+		score->setString("0");
 		DataUtils::save(GameScore, "0"); // 更新每局初始分数
 	}
 	else {
-		score->setText(DataUtils::read(GameScore)); // 显示前面关卡已积累分数
+		score->setString(DataUtils::read(GameScore)); // 显示前面关卡已积累分数
 	}
 
 	// Rect classical
@@ -171,7 +176,7 @@ bool GameScene::init(GameMode mode, int level)
 		Node* bound_left_top = rootNode->getChildByName("bound_left_top");
 		Node* bound_right_center = rootNode->getChildByName("bound_right_center");
 		Node* bound_right_top = rootNode->getChildByName("bound_right_top");
-		Node* bound_left_center = rootNode->getChildByName("bound_left_center");
+		//Node* bound_left_center = rootNode->getChildByName("bound_left_center");
 
 		m_GridBoundExtreamL = Rect(bound_left_down->getPositionX(), bound_left_down->getPositionY(), 
 			bound_left_top->getPositionX() - bound_left_down->getPositionX(), 
@@ -182,7 +187,7 @@ bool GameScene::init(GameMode mode, int level)
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	auto game_info = DataUtils::game_info("data/game.config");
+    auto game_info = DataUtils::game_info("data/game.config");
 	
 	// add objects
 	switch (mode)
@@ -228,18 +233,19 @@ bool GameScene::init(GameMode mode, int level)
 			tank_fore = static_cast<Sprite*>(game_layer->getChildByName("tank-fore"));
 			tank_fore_top = static_cast<Sprite*>(game_layer->getChildByName("tank-fore-top"));
 			set_tank_fore_height(game_info.init_tank_drops);
-			drops->setText(StringUtils::format("%02d", game_info.init_tank_drops)); // 更新水箱显示数值
+			drops->setString(StringUtils::format("%02d", game_info.init_tank_drops)); // 更新水箱显示数值
 
 			if (level == 1) // 第一关初始化水滴数量
 			{
 				DataUtils::save(GameDrops, StringUtils::format("%d", game_info.init_tank_drops));
 			}
 			else {
-				drops->setText(DataUtils::read(GameDrops));
+				drops->setString(DataUtils::read(GameDrops));
+				set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
 			}
 
 			// 更改游戏模式label
-			game_type->setText("Classical");
+			game_type->setString("Classical");
 		}
 		break;
 	case Extreme:  // extream game
@@ -289,16 +295,14 @@ bool GameScene::init(GameMode mode, int level)
 						m_DropDeleteList.pushBack(m_DropList.at(i));  // add to delete list
 					}
 					// 减少水箱水滴 - classical mode
-					if (mode == GameMode::Classical) {
-						auto num = atoi(DataUtils::read(GameDrops).c_str());
-						DataUtils::save(GameDrops, StringUtils::format("%d", num - 1)); // 减少
-						if (atoi(DataUtils::read(GameDrops).c_str()) > -1)
-						{
-							drops->setText(DataUtils::read(GameDrops));
-						}
-						// 更新水箱高度
-						set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
-					}
+                    auto num = atoi(DataUtils::read(GameDrops).c_str());
+                    DataUtils::save(GameDrops, StringUtils::format("%d", num - 1)); // 减少
+                    if (atoi(DataUtils::read(GameDrops).c_str()) > -1)
+                    {
+                        drops->setString(DataUtils::read(GameDrops));
+                    }
+                    // 更新水箱高度
+                    set_tank_fore_height(atoi(DataUtils::read(GameDrops).c_str()));
 
 					// extreme mode
 				}
@@ -369,6 +373,7 @@ void GameScene::update(float delta)
 						}
 						else
 						{
+							m_HaveExplode = true;  // 控制爆炸直到产生bullet之间的间隙
 							m_DropDeleteList.pushBack(drop);      // add drop to delete list
 							m_BulletCombineList.pushBack(bullet); // add bullet to combine list 
 						}
@@ -383,15 +388,15 @@ void GameScene::update(float delta)
 			for (int i = 0;i < m_DropBulletList.size();i++)
 			{
 				auto bullet = (DropBullet*)m_DropBulletList.at(i);
-				if ((bullet->getPositionX() < m_GridBoundExtreamL.getMinX()) | 
+				if ((bullet->getPositionX() < m_GridBoundExtreamL.getMinX()) |
 					(bullet->getPositionX() > m_GridBoundExtreamR.getMaxX()) |
 					(bullet->getPositionY() < m_GridBoundExtreamL.getMinY()) |
 					(bullet->getPositionY() > m_GridBoundExtreamL.getMaxY()) |
 					(bullet->getPositionX() < m_ExtreamCenter.x && 
-						(bullet->getPositionY() > m_ExtreamCenter.y | bullet->getPositionY() < m_ExtreamCenter.y) 
-						&& bullet->getPositionX() > m_GridBoundExtreamL.getMaxX()) |
+						((bullet->getPositionY() > m_ExtreamCenter.y )| (bullet->getPositionY() < m_ExtreamCenter.y)) 
+						&& (bullet->getPositionX() > m_GridBoundExtreamL.getMaxX())) |
 					(bullet->getPositionX() > m_ExtreamCenter.x &&
-						(bullet->getPositionY() > m_ExtreamCenter.y | bullet->getPositionY() < m_ExtreamCenter.y)
+						((bullet->getPositionY() > m_ExtreamCenter.y) | (bullet->getPositionY() < m_ExtreamCenter.y))
 						&& bullet->getPositionX() < m_GridBoundExtreamL.getMinX()))
 				{
 					m_BulletDeleteList.pushBack(bullet);
@@ -488,14 +493,16 @@ void GameScene::update(float delta)
 				int drop = atoi(DataUtils::read(GameDrops).c_str());
 				DataUtils::save(GameDrops, StringUtils::format("%d", drop + 1));
 				set_tank_fore_height(drop + 1);						 // 水滴图片增高
-				drops->setText(StringUtils::format("%d", drop + 1)); // 水滴数字增加 1
+				drops->setString(StringUtils::format("%d", drop + 1)); // 水滴数字增加 1
 				log("=====%d=====", drop + 1);
 			}
 			m_upInt++;
 		}
 	}
 
-	if (m_CoundBegin && m_DropBulletList.size() == 0 && m_BulletCombineList.size() == 0 && m_BulletDeleteList.size() == 0)
+	// bug 有几率提前结束计数：恰巧水滴碰撞爆炸产生新水滴之前的一段时间符合判断条件 < 原因：combine同时出现时，产生此现象 
+	// <已解决： 设置m_HaveExplode控制这个小时间间隙不进行判断并结束计数
+	if (m_CoundBegin && (!m_HaveExplode) && m_DropBulletList.size() == 0 && m_BulletCombineList.size() == 0 && m_BulletDeleteList.size() == 0)
 	{
 		// 结束计数
 		m_CoundBegin = false;
@@ -503,46 +510,70 @@ void GameScene::update(float delta)
 	}
 }
 
+void GameScene::layer_back(Ref* pSender)
+{
+    Layer* layer = (Layer*)pSender;
+    layer->runAction(Sequence::create(ScaleTo::create(0.3, 2.0f), MoveTo::create(0.4, Vec2(1536, 1300)), NULL));
+    //layer->setPosition(1536, 1200);
+    //layer->setScale(2.0f);
+}
+
 void GameScene::gameLose()
 {
-	auto size = Director::getInstance()->getVisibleSize();
+    action->pause(); // pause action of game scene
+	Audio::play_effect("audio/fail.wav");
 	auto dark = DarkLayer::create();
 	auto lose = LoseLayer::createLayer();
-	//lose->setPosition(size.width, size.height);
-	//dark->addChild(lose);
-	//dark->setPosition(0, 0);
-	//this->addChild(dark, 2);
-	lose->setPosition(size.width / 2, size.height / 2);
-	this->addChild(lose);
+    lose->setScale(2.0f);
+	lose->setPosition(1536, 1200);
+    lose->setAnchorPoint(Vec2(0.5, 0.5));
+    lose->runAction(Sequence::create(MoveBy::create(0.5, Vec2(0, 80)), MoveBy::create(0.3, Vec2(0, -80)),
+                                    MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
+                                    NULL));
+    lose->runAction(Sequence::create(ScaleBy::create(0.5, 1.2), ScaleBy::create(0.3, 0.5),ScaleBy::create(0.5, 1.2),
+                                    CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, lose)), NULL));
+    this->addChild(dark, 5);
+	this->addChild(lose, 6);
 }
 
 void GameScene::gameWin()
 {
-	auto size = Director::getInstance()->getVisibleSize();
+    action->pause(); // pause action of game scene
+	Audio::play_effect("audio/win.wav");
 	auto dark = DarkLayer::create();
 	auto win = WinLayer::createLayer();
-	//lose->setPosition(size.width, size.height);
-	//dark->addChild(lose);
-	//dark->setPosition(0, 0);
-	//this->addChild(dark, 2);
-	win->setPosition(size.width / 2, size.height / 2);
-	this->addChild(win);
+	win->setScale(2.0f);
+	win->setPosition(1536, 1200);
+    win->setAnchorPoint(Vec2(0.5, 0.5));
+    win->runAction(Sequence::create(MoveBy::create(0.5, Vec2(0, 80)), MoveBy::create(0.3, Vec2(0, -80)),
+                                    MoveBy::create(0.8, Vec2(0, 100)), MoveBy::create(0.5, Vec2(0, -100)),
+                                    NULL));
+    win->runAction(Sequence::create(ScaleBy::create(0.4, 1.2), ScaleBy::create(0.2, 0.5), ScaleBy::create(0.5, 1.2),
+                                    CallFunc::create(CC_CALLBACK_0(GameScene::layer_back, this, win)), NULL));
+	this->addChild(dark, 5);
+	this->addChild(win, 6);
 }
 
 void GameScene::btn_set_callback(Ref* pSender, Widget::TouchEventType type)
 {
 	if (type == Widget::TouchEventType::ENDED)
 	{
+        Audio::play_effect("audio/button.wav");
 		m_SetDown = !m_SetDown;
 		if (m_SetDown)
 		{
-			btn_bg->setVisible(true);     // default visible : false
+			if (m_SoundDown)
+			{
+				btn_nosound->setVisible(true);
+			}
+			btn_bg->setVisible(true);
 			btn_about->setVisible(true);
 			btn_restart->setVisible(true);
 			btn_sound->setVisible(true);
 		}
 		else
 		{
+			btn_nosound->setVisible(false);
 			btn_bg->setVisible(false);     // default visible : false
 			btn_about->setVisible(false);
 			btn_restart->setVisible(false);
@@ -555,6 +586,7 @@ void GameScene::btn_restart_callback(Ref* pSender, Widget::TouchEventType type)
 {
 	if (type == Widget::TouchEventType::ENDED)
 	{
+        Audio::play_effect("audio/button.wav");
 		// restart game scene
 		if (m_Gamemode == GameMode::Classical)
 		{
@@ -571,15 +603,18 @@ void GameScene::btn_sound_callback(Ref* pSender, Widget::TouchEventType type)
 {
 	if (type == Widget::TouchEventType::ENDED)
 	{
+        Audio::play_effect("audio/button.wav");
 		m_SoundDown = !m_SoundDown;
 		if (m_SoundDown)
 		{
 			btn_nosound->setVisible(true);
 			// stop sound
+			Audio::pause(); // 声音暂停
 		}
 		else {
 			btn_nosound->setVisible(false);
 			// resume sound
+			Audio::resume(); // 声音恢复
 		}
 	}
 }
@@ -588,6 +623,6 @@ void GameScene::btn_about_callback(Ref* pSender, Widget::TouchEventType type)
 {
 	if (type == Widget::TouchEventType::ENDED)
 	{
-
+        Audio::play_effect("audio/button.wav");
 	}
 }

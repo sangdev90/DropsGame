@@ -4,6 +4,8 @@
 #include "../Start/Start.h"
 using namespace cocos2d::ui;
 
+#include "../Audio/Audio.h"
+
 bool Help::init()
 {
 	if (!Layer::init())
@@ -41,6 +43,7 @@ Scene* Help::createScene()
 
 void Help::btn_continue_callback(Ref* pSender)
 {
+	Audio::play_effect("audio/button.wav");
 	Director::getInstance()->replaceScene(TransitionProgressOutIn::create(0.5, Start::createScene())); 
 }
 
