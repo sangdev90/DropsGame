@@ -458,14 +458,14 @@ void GameScene::update(float delta)
 	}
 
 	// ÅÐ¶ÏÊäÓ®
-	if (atoi(DataUtils::read(GameDrops).c_str()) == 0 && m_BulletDeleteList.size() == 0 && m_BulletCombineList.size() == 0)
+	if (atoi(DataUtils::read(GameDrops).c_str()) == 0 && m_BulletDeleteList.size() == 0 && m_BulletCombineList.size() == 0 && m_DropBulletList.size() == 0)
 	{
 		// Êä
 		gameLose();
 		unscheduleUpdate();
 	}
 
-	if (m_DropList.size() == 0 && m_DropBulletList.size() == 0 && m_BulletDeleteList.size() == 0)
+	if ((!m_Click) && m_DropList.size() == 0 && m_DropBulletList.size() == 0 && m_BulletDeleteList.size() == 0)
 	{
 		if (atoi(DataUtils::read(GameDrops).c_str()) >= 0)
 		{
